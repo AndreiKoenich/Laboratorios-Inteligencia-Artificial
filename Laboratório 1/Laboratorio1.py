@@ -10,8 +10,8 @@
 import os
 
 SIMBOLOBRANCO = '_' # Constante para indicar o espaco em branco no tabuleiro do 8-puzzle.
-POSICAOINICIAL = '812_43765'
-SOLUCAOFINAL = '12345678_'
+POSICAOINICIAL = '123_46758' # Apenas para teste, remover depois
+OBJETIVO = '12345678_'
 CUSTOINICIAL = 0
 
 TEXTOCIMA = 'acima'
@@ -37,19 +37,63 @@ class Nodo: # Classe para armazenar todas as informacoes de cada nodo da arvore.
         self.acao = acao_
         self.custo = custo_
 
-def valida_posicao(estado): # Verifica se a posicao de entrada do puzzle possui solucao viavel.
-    conta_inversoes = 0
+def bfs(estado_inicial):
+    if valida_texto(estado_inicial) == False:
+        return None
 
-    for i in range(len(estado)): # Iteracoes para contar o numero de inversoes no tabuleiro (baseado em https://www.geeksforgeeks.org/check-instance-8-puzzle-solvable/).
-        for j in range(i+1,TOTALPOSICOES):
-            if estado[i] != SIMBOLOBRANCO and estado[j] != SIMBOLOBRANCO and estado[i] > estado[j]:
-                conta_inversoes += 1
+    elif valida_posicao(estado_inicial) == False:
+        return None
 
-    if (conta_inversoes % 2 == 0): # Se o numero de inversoes e par, entao o tabuleiro possui solucao valida.
-        return True
+    explorados = []
+    raiz = Nodo(estado_inicial,None,'',CUSTOINICIAL) # Inicializa a raiz, com o estado inicial do tabuleiro.
+    fronteira = [raiz] # Inicializacao da FILA que representa a fronteira.
+    movimentos = [] # Inicializacao da lista contendo os movimentos do estado inicial ate a solucao.
 
-    else: # Se o numero de inversoes e impar, entao o tabuleiro nao possui solucao valida.
-        return False
+    while True: # Iteracao principal para realizar a busca em profundidade, ate encontrar a solucao (nunca entra em loop infinito).
+        if fronteira == []:
+            return None
+
+        v = fronteira.pop(0) # Remove o PRIMEIRO elemento adicionado na FILA (FIFO - first in, first out).
+
+        if v.estado == OBJETIVO: # Casos em que foi encontrada a solucao.
+            while v.pai != None: # Iteracao para resgatar o caminho de acoes do estado inicial ate a solucao.
+                movimentos.append(v.acao)
+                v = v.pai
+            movimentos.reverse()
+            return movimentos
+
+        if v not in explorados: # Casos em que o vertice da fronteira nao foi explorado ainda.
+            explorados.append(v) # Adiciona v no conjunto dos explorados.
+            fronteira += expande(v) # Adiciona todos os vizinhos de v na fronteira.
+
+def dfs(estado_inicial):
+    if valida_texto(estado_inicial) == False:
+        return None
+
+    elif valida_posicao(estado_inicial) == False:
+        return None
+
+    explorados = []
+    raiz = Nodo(estado_inicial,None,'',CUSTOINICIAL) # Inicializa a raiz, com o estado inicial do tabuleiro.
+    fronteira = [raiz] # Inicializacao da PILHA que representa a fronteira.
+    caminho = [] # Inicializacao da lista contendo os movimentos do estado inicial ate a solucao.
+
+    while True: # Iteracao principal para realizar a busca em profundidade, ate encontrar a solucao (pode entrar em loop infinito).
+        if fronteira == []:
+            return None
+
+        v = fronteira.pop() # Remove o ULTIMO elemento adicionado na PILHA (LIFO - last in, first out).
+
+        if v.estado == OBJETIVO: # Casos em que foi encontrada a solucao.
+            while v.pai != None: # Iteracao para resgatar o caminho de acoes do estado inicial ate a solucao.
+                caminho.append(v.acao)
+                v = v.pai
+            caminho.reverse()
+            return caminho
+
+        if v not in explorados: # Casos em que o vertice da fronteira nao foi explorado ainda.
+            explorados.append(v) # Adiciona v no conjunto dos explorados.
+            fronteira += expande(v) # Adiciona todos os vizinhos de v na fronteira.
 
 def valida_texto(estado): # Verifica se o texto representando a posicao do puzzle e valido.
     if len(estado) != TOTALPOSICOES: # Testa se o estado possui nove caracteres.
@@ -64,13 +108,27 @@ def valida_texto(estado): # Verifica se o texto representando a posicao do puzzl
 
     return True
 
-def permuta_branco(estado, posicao_branco, posicao_numero):
+def valida_posicao(estado): # Verifica se a posicao de entrada do puzzle possui solucao viavel.
+    conta_inversoes = 0
+
+    for i in range(len(estado)): # Iteracoes para contar o numero de inversoes no tabuleiro (baseado em https://www.geeksforgeeks.org/check-instance-8-puzzle-solvable/).
+        for j in range(i+1,TOTALPOSICOES):
+            if estado[i] != SIMBOLOBRANCO and estado[j] != SIMBOLOBRANCO and estado[i] > estado[j]:
+                conta_inversoes += 1
+
+    if (conta_inversoes % 2 == 0): # Se o numero de inversoes e par, entao o tabuleiro possui solucao valida.
+        return True
+
+    else: # Se o numero de inversoes e impar, entao o tabuleiro nao possui solucao valida.
+        return False
+
+def permuta_branco(estado, posicao_branco, posicao_numero): # Movimenta a posicao em branco, no tabuleiro.
     lista_posicao = list(estado)
     lista_posicao[posicao_branco], lista_posicao[posicao_numero] = lista_posicao[posicao_numero], lista_posicao[posicao_branco]
     novo_estado = ''.join(lista_posicao)
     return novo_estado
 
-def expande(nodo):
+def expande(nodo): # Realiza todas as movimentacoes possiveis, a partir de um estado no tabuleiro.
     acoes = sucessor(nodo.estado) # Obtem todas as movimentacoes possiveis no tabuleiro.
     lista_nodos = [] # Inicializa a lista contendo os nodos a serem retornados.
     novo_nodo = Nodo('', None, '', 0)
@@ -131,16 +189,13 @@ def sucessor(estado):
     return movimentos
 
 def inicia_programa():
-    if valida_texto(POSICAOINICIAL) == False:
-        print('TEXTO DA POSICAO INICIAL INVALIDO!')
-        return
 
-    if valida_posicao(POSICAOINICIAL) == False:
-        print('POSICAO INICIAL SEM SOLUCAO!')
-        return
+    #print(sucessor(POSICAOINICIAL))
+    print(bfs(POSICAOINICIAL))
+    #print(dfs(POSICAOINICIAL))
+    #print(astar_hamming(POSICAOINICIAL))
+    #print(astar_manhattan(POSICAOINICIAL))
 
-    nodo_pai = Nodo(POSICAOINICIAL,None,'',CUSTOINICIAL) # Teste, remover depois
-    sucessores = expande(nodo_pai) # Teste, remover depois
 
 def main():
     inicia_programa()
