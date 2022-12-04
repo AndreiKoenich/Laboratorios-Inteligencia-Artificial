@@ -10,7 +10,7 @@
 import os
 
 SIMBOLOBRANCO = '_' # Constante para indicar o espaco em branco no tabuleiro do 8-puzzle.
-POSICAOINICIAL = '2_3541687' # Apenas para teste, remover depois
+POSICAOINICIAL = '123_46758' # Apenas para teste, remover depois
 OBJETIVO = '12345678_'
 CUSTOINICIAL = 0
 
@@ -37,13 +37,6 @@ class Nodo: # Classe para armazenar todas as informacoes de cada nodo da arvore.
         self.acao = acao_
         self.custo = custo_
 
-def testa_repeticoes(nodo,lista_nodos):
-    for i in lista_nodos:
-        if i.estado == nodo.estado:
-            return True
-
-    return False
-
 def bfs(estado_inicial):
     if valida_texto(estado_inicial) == False:
         return None
@@ -51,7 +44,7 @@ def bfs(estado_inicial):
     elif valida_posicao(estado_inicial) == False:
         return None
 
-    explorados = []
+    explorados = {} # Inicializa o dicionario, contendo os nos explorados. O estado do tabuleiro sera usado como identificador.
     raiz = Nodo(estado_inicial,None,'',CUSTOINICIAL) # Inicializa a raiz, com o estado inicial do tabuleiro.
     fronteira = [raiz] # Inicializacao da FILA que representa a fronteira.
     movimentos = [] # Inicializacao da lista contendo os movimentos do estado inicial ate a solucao.
@@ -70,8 +63,8 @@ def bfs(estado_inicial):
             movimentos.reverse()
             return movimentos
 
-        if testa_repeticoes(v,explorados) == False: # Casos em que o vertice da fronteira nao foi explorado ainda.
-            explorados.append(v) # Adiciona v no conjunto dos explorados.
+        if v.estado not in explorados:
+            explorados[v.estado] = v
             fronteira += expande(v) # Adiciona todos os vizinhos de v na fronteira.
 
 def dfs(estado_inicial):
@@ -81,7 +74,7 @@ def dfs(estado_inicial):
     elif valida_posicao(estado_inicial) == False:
         return None
 
-    explorados = []
+    explorados = {} # Inicializa o dicionario, contendo os nos explorados. O estado do tabuleiro sera usado como identificador.
     raiz = Nodo(estado_inicial,None,'',CUSTOINICIAL) # Inicializa a raiz, com o estado inicial do tabuleiro.
     fronteira = [raiz] # Inicializacao da PILHA que representa a fronteira.
     caminho = [] # Inicializacao da lista contendo os movimentos do estado inicial ate a solucao.
@@ -99,8 +92,8 @@ def dfs(estado_inicial):
             caminho.reverse()
             return caminho
 
-        if testa_repeticoes(v,explorados) == False: # Casos em que o vertice da fronteira nao foi explorado ainda.
-            explorados.append(v) # Adiciona v no conjunto dos explorados.
+        if v.estado not in explorados:
+            explorados[v.estado] = v
             fronteira += expande(v) # Adiciona todos os vizinhos de v na fronteira.
 
 def valida_texto(estado): # Verifica se o texto representando a posicao do puzzle e valido.
@@ -199,8 +192,8 @@ def sucessor(estado):
 def inicia_programa():
 
     #print(sucessor(POSICAOINICIAL))
-    #print(bfs(POSICAOINICIAL))
-    print(dfs(POSICAOINICIAL))
+    print(bfs(POSICAOINICIAL))
+    #print(dfs(POSICAOINICIAL))
     #print(astar_hamming(POSICAOINICIAL))
     #print(astar_manhattan(POSICAOINICIAL))
 
