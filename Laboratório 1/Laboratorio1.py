@@ -11,7 +11,7 @@ import os
 
 SIMBOLOBRANCO = '_' # Constante para indicar o espaco em branco no tabuleiro do 8-puzzle.
 POSICAOINICIAL = '123_46758' # Apenas para teste, remover depois
-OBJETIVO = '12345678_'
+OBJETIVO = '12356_784'
 CUSTOINICIAL = 0
 
 TEXTOCIMA = 'acima'
