@@ -10,7 +10,7 @@
 import os
 
 SIMBOLOBRANCO = '_' # Constante para indicar o espaco em branco no tabuleiro do 8-puzzle.
-POSICAOPUZZLE = '2_3541687'
+POSICAOINICIAL = '812_43765'
 SOLUCAOFINAL = '12345678_'
 CUSTOINICIAL = 0
 
@@ -28,6 +28,7 @@ SEXTAPOSICAO = 5
 SETIMAPOSICAO = 6
 OITAVAPOSICAO = 7
 NONAPOSICAO = 8
+TOTALPOSICOES = 9
 
 class Nodo: # Classe para armazenar todas as informacoes de cada nodo da arvore.
     def __init__(self, estado_,pai_,acao_,custo_):
@@ -35,6 +36,33 @@ class Nodo: # Classe para armazenar todas as informacoes de cada nodo da arvore.
         self.pai = pai_
         self.acao = acao_
         self.custo = custo_
+
+def valida_posicao(estado):
+    conta_inversoes = 0
+
+    for i in range(len(estado)):
+        for j in range(i+1,TOTALPOSICOES):
+            if estado[i] != SIMBOLOBRANCO and estado[j] != SIMBOLOBRANCO and estado[i] > estado[j]:
+                conta_inversoes += 1
+
+    if (conta_inversoes % 2 == 0):
+        return True
+
+    else:
+        return False
+
+def valida_texto(estado):
+    if len(estado) != TOTALPOSICOES: # Testa se o estado possui nove caracteres.
+        return False
+
+    if (len(set(estado)) != len(estado)): # Testa se existem elementos repetidos.
+        return False
+
+    for i in estado: # Testa se todos os caracteres sao numeros ou espacos em branco.
+        if not i.isdigit() and i != SIMBOLOBRANCO:
+            return False
+
+    return True
 
 def permuta_branco(estado, posicao_branco, posicao_numero):
     lista_posicao = list(estado)
@@ -103,11 +131,19 @@ def sucessor(estado):
     return movimentos
 
 def inicia_programa():
-    nodo_pai = Nodo(POSICAOPUZZLE,None,'',CUSTOINICIAL) # Teste, remover depois
+    if valida_texto(POSICAOINICIAL) == False:
+        print('TEXTO DA POSICAO INICIAL INVALIDO!')
+        return
+
+    if valida_posicao(POSICAOINICIAL) == False:
+        print('POSICAO INICIAL SEM SOLUCAO!')
+        return
+
+    nodo_pai = Nodo(POSICAOINICIAL,None,'',CUSTOINICIAL) # Teste, remover depois
     sucessores = expande(nodo_pai) # Teste, remover depois
 
 def main():
     inicia_programa()
-    #os.system("PAUSE")
+    os.system("PAUSE")
 
 main()
