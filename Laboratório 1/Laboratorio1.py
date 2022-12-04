@@ -37,21 +37,21 @@ class Nodo: # Classe para armazenar todas as informacoes de cada nodo da arvore.
         self.acao = acao_
         self.custo = custo_
 
-def valida_posicao(estado):
+def valida_posicao(estado): # Verifica se a posicao de entrada do puzzle possui solucao viavel.
     conta_inversoes = 0
 
-    for i in range(len(estado)):
+    for i in range(len(estado)): # Iteracoes para contar o numero de inversoes no tabuleiro (baseado em https://www.geeksforgeeks.org/check-instance-8-puzzle-solvable/).
         for j in range(i+1,TOTALPOSICOES):
             if estado[i] != SIMBOLOBRANCO and estado[j] != SIMBOLOBRANCO and estado[i] > estado[j]:
                 conta_inversoes += 1
 
-    if (conta_inversoes % 2 == 0):
+    if (conta_inversoes % 2 == 0): # Se o numero de inversoes e par, entao o tabuleiro possui solucao valida.
         return True
 
-    else:
+    else: # Se o numero de inversoes e impar, entao o tabuleiro nao possui solucao valida.
         return False
 
-def valida_texto(estado):
+def valida_texto(estado): # Verifica se o texto representando a posicao do puzzle e valido.
     if len(estado) != TOTALPOSICOES: # Testa se o estado possui nove caracteres.
         return False
 
