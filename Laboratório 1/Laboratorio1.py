@@ -36,66 +36,7 @@ class Nodo: # Classe para armazenar todas as informacoes de cada nodo da arvore.
         self.pai = pai_
         self.acao = acao_
         self.custo = custo_
-
-def bfs(estado_inicial):
-    if valida_texto(estado_inicial) == False:
-        return None
-
-    elif valida_posicao(estado_inicial) == False:
-        return None
-
-    explorados = {} # Inicializa o dicionario, contendo os nos explorados. O estado do tabuleiro sera usado como identificador.
-    raiz = Nodo(estado_inicial,None,'',CUSTOINICIAL) # Inicializa a raiz, com o estado inicial do tabuleiro.
-    fronteira = [raiz] # Inicializacao da FILA que representa a fronteira.
-    movimentos = [] # Inicializacao da lista contendo os movimentos do estado inicial ate a solucao.
-
-    while True: # Iteracao principal para realizar a busca em profundidade, ate encontrar a solucao (nunca entra em loop infinito).
-
-        if fronteira == []:
-            return None
-
-        v = fronteira.pop(0) # Remove o PRIMEIRO elemento adicionado na FILA (FIFO - first in, first out).
-
-        if v.estado == OBJETIVO: # Casos em que foi encontrada a solucao.
-            while v.pai != None: # Iteracao para resgatar o caminho de acoes do estado inicial ate a solucao.
-                movimentos.append(v.acao)
-                v = v.pai
-            movimentos.reverse()
-            return movimentos
-
-        if v.estado not in explorados:
-            explorados[v.estado] = v
-            fronteira += expande(v) # Adiciona todos os vizinhos de v na fronteira.
-
-def dfs(estado_inicial):
-    if valida_texto(estado_inicial) == False:
-        return None
-
-    elif valida_posicao(estado_inicial) == False:
-        return None
-
-    explorados = {} # Inicializa o dicionario, contendo os nos explorados. O estado do tabuleiro sera usado como identificador.
-    raiz = Nodo(estado_inicial,None,'',CUSTOINICIAL) # Inicializa a raiz, com o estado inicial do tabuleiro.
-    fronteira = [raiz] # Inicializacao da PILHA que representa a fronteira.
-    caminho = [] # Inicializacao da lista contendo os movimentos do estado inicial ate a solucao.
-
-    while True: # Iteracao principal para realizar a busca em profundidade, ate encontrar a solucao.
-        if fronteira == []:
-            return None
-
-        v = fronteira.pop() # Remove o ULTIMO elemento adicionado na PILHA (LIFO - last in, first out).
-
-        if v.estado == OBJETIVO: # Casos em que foi encontrada a solucao.
-            while v.pai != None: # Iteracao para resgatar o caminho de acoes do estado inicial ate a solucao.
-                caminho.append(v.acao)
-                v = v.pai
-            caminho.reverse()
-            return caminho
-
-        if v.estado not in explorados:
-            explorados[v.estado] = v
-            fronteira += expande(v) # Adiciona todos os vizinhos de v na fronteira.
-
+        
 def valida_texto(estado): # Verifica se o texto representando a posicao do puzzle e valido.
     if len(estado) != TOTALPOSICOES: # Testa se o estado possui nove caracteres.
         return False
@@ -121,26 +62,15 @@ def valida_posicao(estado): # Verifica se a posicao de entrada do puzzle possui 
         return True
 
     else: # Se o numero de inversoes e impar, entao o tabuleiro nao possui solucao valida.
-        return False
-
-def permuta_branco(estado, posicao_branco, posicao_numero): # Movimenta a posicao em branco, no tabuleiro.
+        return False  
+    
+ def permuta_branco(estado, posicao_branco, posicao_numero): # Movimenta a posicao em branco, no tabuleiro.
     lista_posicao = list(estado)
     lista_posicao[posicao_branco], lista_posicao[posicao_numero] = lista_posicao[posicao_numero], lista_posicao[posicao_branco]
     novo_estado = ''.join(lista_posicao)
     return novo_estado
 
-def expande(nodo): # Realiza todas as movimentacoes possiveis, a partir de um estado no tabuleiro.
-    acoes = sucessor(nodo.estado) # Obtem todas as movimentacoes possiveis no tabuleiro.
-    lista_nodos = [] # Inicializa a lista contendo os nodos a serem retornados.
-    novo_nodo = Nodo('', None, '', 0)
-
-    for i in range(len(acoes)):
-        novo_nodo = Nodo(acoes[i][1],nodo,acoes[i][0],nodo.custo+1)
-        lista_nodos.append(novo_nodo)
-
-    return lista_nodos
-
-def sucessor(estado):
+def sucessor(estado): # Recebe um estado e retorna uma lista de tuplas (ação, estado atingido) para cada ação que pode ser realizada no estado recebido como parâmetro.
     movimentos = [] # Inicializa a lista contendo as tuplas que indicam os movimentos.
     posicao_branco = estado.rfind(SIMBOLOBRANCO) # Encontra a posicao do espaco vazio no tabuleiro.
 
@@ -187,7 +117,77 @@ def sucessor(estado):
         movimentos.append((TEXTOCIMA, permuta_branco(estado, NONAPOSICAO, SEXTAPOSICAO)))
         movimentos.append((TEXTOESQUERDA, permuta_branco(estado, NONAPOSICAO, OITAVAPOSICAO)))
 
-    return movimentos
+    return movimentos   
+    
+ def expande(nodo): # Realiza todas as movimentacoes possiveis, a partir de um estado no tabuleiro.
+    acoes = sucessor(nodo.estado) # Obtem todas as movimentacoes possiveis no tabuleiro.
+    lista_nodos = [] # Inicializa a lista contendo os nodos a serem retornados.
+    novo_nodo = Nodo('', None, '', 0)
+
+    for i in range(len(acoes)):
+        novo_nodo = Nodo(acoes[i][1],nodo,acoes[i][0],nodo.custo+1)
+        lista_nodos.append(novo_nodo)
+
+    return lista_nodos  
+
+def bfs(estado_inicial): # Realiza a busca em largura, ate encontrar a posicao que corresponde a solucao do jogo.
+    if valida_texto(estado_inicial) == False:
+        return None
+
+    elif valida_posicao(estado_inicial) == False:
+        return None
+
+    explorados = {} # Inicializa o dicionario, contendo os nos explorados. O estado do tabuleiro sera usado como identificador.
+    raiz = Nodo(estado_inicial,None,'',CUSTOINICIAL) # Inicializa a raiz, com o estado inicial do tabuleiro.
+    fronteira = [raiz] # Inicializacao da FILA que representa a fronteira.
+    movimentos = [] # Inicializacao da lista contendo os movimentos do estado inicial ate a solucao.
+
+    while True: # Iteracao principal para realizar a busca em largura, ate encontrar a solucao.
+
+        if fronteira == []:
+            return None
+
+        v = fronteira.pop(0) # Remove o PRIMEIRO elemento adicionado na FILA (FIFO - first in, first out).
+
+        if v.estado == OBJETIVO: # Casos em que foi encontrada a solucao.
+            while v.pai != None: # Iteracao para resgatar o caminho de acoes do estado inicial ate a solucao.
+                movimentos.append(v.acao)
+                v = v.pai
+            movimentos.reverse()
+            return movimentos
+
+        if v.estado not in explorados:
+            explorados[v.estado] = v
+            fronteira += expande(v) # Adiciona todos os vizinhos de v na fronteira.
+
+def dfs(estado_inicial): # Realiza a busca em largura, ate encontrar a posicao que corresponde a solucao do jogo.
+    if valida_texto(estado_inicial) == False:
+        return None
+
+    elif valida_posicao(estado_inicial) == False:
+        return None
+
+    explorados = {} # Inicializa o dicionario, contendo os nos explorados. O estado do tabuleiro sera usado como identificador.
+    raiz = Nodo(estado_inicial,None,'',CUSTOINICIAL) # Inicializa a raiz, com o estado inicial do tabuleiro.
+    fronteira = [raiz] # Inicializacao da PILHA que representa a fronteira.
+    caminho = [] # Inicializacao da lista contendo os movimentos do estado inicial ate a solucao.
+
+    while True: # Iteracao principal para realizar a busca em profundidade, ate encontrar a solucao.
+        if fronteira == []:
+            return None
+
+        v = fronteira.pop() # Remove o ULTIMO elemento adicionado na PILHA (LIFO - last in, first out).
+
+        if v.estado == OBJETIVO: # Casos em que foi encontrada a solucao.
+            while v.pai != None: # Iteracao para resgatar o caminho de acoes do estado inicial ate a solucao.
+                caminho.append(v.acao)
+                v = v.pai
+            caminho.reverse()
+            return caminho
+
+        if v.estado not in explorados:
+            explorados[v.estado] = v
+            fronteira += expande(v) # Adiciona todos os vizinhos de v na fronteira.
 
 def inicia_programa():
 
