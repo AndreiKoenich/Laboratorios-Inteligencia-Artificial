@@ -131,10 +131,10 @@ def sucessor(estado): # Recebe um estado e retorna uma lista de tuplas (ação, 
     return lista_nodos  
 
 def bfs(estado_inicial): # Realiza a busca em largura, ate encontrar a posicao que corresponde a solucao do jogo.
-    if valida_texto(estado_inicial) == False:
+    if valida_texto(estado_inicial) == False: # Verifica se o texto (string) representando a posicao do puzzle e valido.
         return None
 
-    elif valida_posicao(estado_inicial) == False:
+    elif valida_posicao(estado_inicial) == False: # Verifica se a posicao de entrada do puzzle possui solucao viavel.
         return None
 
     explorados = {} # Inicializa o dicionario, contendo os nos explorados. O estado do tabuleiro sera usado como identificador.
@@ -159,12 +159,12 @@ def bfs(estado_inicial): # Realiza a busca em largura, ate encontrar a posicao q
         if v.estado not in explorados:
             explorados[v.estado] = v
             fronteira += expande(v) # Adiciona todos os vizinhos de v na fronteira.
-
+       
 def dfs(estado_inicial): # Realiza a busca em largura, ate encontrar a posicao que corresponde a solucao do jogo.
-    if valida_texto(estado_inicial) == False:
+    if valida_texto(estado_inicial) == False: # Verifica se o texto (string) representando a posicao do puzzle e valido.
         return None
 
-    elif valida_posicao(estado_inicial) == False:
+    elif valida_posicao(estado_inicial) == False: # Verifica se a posicao de entrada do puzzle possui solucao viavel.
         return None
 
     explorados = {} # Inicializa o dicionario, contendo os nos explorados. O estado do tabuleiro sera usado como identificador.
