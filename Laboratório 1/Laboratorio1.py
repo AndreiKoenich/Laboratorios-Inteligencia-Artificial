@@ -64,7 +64,7 @@ def valida_posicao(estado): # Verifica se a posicao de entrada do puzzle possui 
     else: # Se o numero de inversoes e impar, entao o tabuleiro nao possui solucao valida.
         return False  
     
- def permuta_branco(estado, posicao_branco, posicao_numero): # Movimenta a posicao em branco, no tabuleiro.
+def permuta_branco(estado, posicao_branco, posicao_numero): # Movimenta a posicao em branco, no tabuleiro.
     lista_posicao = list(estado)
     lista_posicao[posicao_branco], lista_posicao[posicao_numero] = lista_posicao[posicao_numero], lista_posicao[posicao_branco]
     novo_estado = ''.join(lista_posicao)
@@ -119,7 +119,7 @@ def sucessor(estado): # Recebe um estado e retorna uma lista de tuplas (ação, 
 
     return movimentos   
     
- def expande(nodo): # Realiza todas as movimentacoes possiveis, a partir de um estado no tabuleiro.
+def expande(nodo): # Realiza todas as movimentacoes possiveis, a partir de um estado no tabuleiro.
     acoes = sucessor(nodo.estado) # Obtem todas as movimentacoes possiveis no tabuleiro.
     lista_nodos = [] # Inicializa a lista contendo os nodos a serem retornados.
     novo_nodo = Nodo('', None, '', 0)
