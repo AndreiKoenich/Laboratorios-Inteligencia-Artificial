@@ -7,6 +7,7 @@
 # Willian Nunes Reichert  - Cartao 00134090
 
 import heapq
+import numpy as np
 
 
 SIMBOLOBRANCO = '_'  # Constante para indicar o espaco em branco no tabuleiro do 8-puzzle.
@@ -29,6 +30,9 @@ SETIMAPOSICAO = 6
 OITAVAPOSICAO = 7
 NONAPOSICAO = 8
 TOTALPOSICOES = 9
+
+ROW = 0
+COL = 1
 
 
 class Nodo:  # Classe para armazenar todas as informacoes de cada nodo da arvore.
@@ -234,14 +238,98 @@ def astar_hamming(
             for nodo in expande(v):  # Adiciona todos os vizinhos de v na fronteira.
                 nodo.heuristica = heuristica_hamming(nodo.estado)
                 heapq.heappush(fronteira, nodo)
+                
+def converter_para_matriz(estado):    
+    matriz = np.matrix([                         # Converte a string do estado em uma matriz com os elementos posicionados tal qual o jogo
+        [estado[PRIMEIRAPOSICAO],estado[SEGUNDAPOSICAO],estado[TERCEIRAPOSICAO]],
+        [estado[QUARTAPOSICAO],estado[QUINTAPOSICAO],estado[SEXTAPOSICAO]],
+        [estado[SETIMAPOSICAO],estado[OITAVAPOSICAO],estado[NONAPOSICAO]]
+    ])
+    return matriz
+
+def descobre_quem_moveu(matriz,acao):
+    pos_underline = np.where(matriz == '_')          # Procura a posição do "_"
+    pos_elemento_alterado = list(pos_underline)      # Converte a coordenada para lista, para poder fazer soma e subtração com uma dimensão específica
+    match acao:                                      # Dependendo de qual foi a AÇÂO pode-se saber onde está o elemento movido, seguindo na direção contrária da ação
+        case 'acima':
+            pos_elemento_alterado[ROW] = pos_elemento_alterado[ROW] + 1            
+        case 'abaixo':
+            pos_elemento_alterado[ROW] = pos_elemento_alterado[ROW] - 1                
+        case 'esquerda':
+            pos_elemento_alterado[COL] = pos_elemento_alterado[COL] + 1                
+        case 'direita':    
+            pos_elemento_alterado[COL] = pos_elemento_alterado[COL] - 1                                    
+    elemento_alterado = matriz.A[pos_elemento_alterado[ROW],pos_elemento_alterado[COL]][0]  # Retorna o elemento que está naquela coordenada
+    return elemento_alterado
+
+def distancia_para_objetivo(matriz,elemento):
+    match elemento:         # De acordo com qual é o número, o seu local de objetivo é diferente, então este seletor retorna onde ele deve ficar no final
+        case '1':
+            posicao_objetivo = [[0],[0]]
+        case '2':
+            posicao_objetivo = [[0],[1]]
+        case '3':
+            posicao_objetivo = [[0],[2]]
+        case '4':
+            posicao_objetivo = [[1],[0]]
+        case '5':
+            posicao_objetivo = [[1],[1]]
+        case '6':
+            posicao_objetivo = [[1],[2]]
+        case '7':
+            posicao_objetivo = [[2],[0]]
+        case '8':
+            posicao_objetivo = [[2],[1]]      
+        case '_':
+            posicao_objetivo = [[2],[2]]
+    posicao_atual = np.where(matriz == elemento)    # Retorna a coordenada do elemento a ser movido
+    distancia = abs(posicao_atual[ROW] - posicao_objetivo[ROW]) + abs(posicao_atual[COL] - posicao_objetivo[COL])  # Calcula a distância entre duas coordenadas da matriz
+    return distancia
+    
+def heuristica_manhattan(estado,acao):
+    matriz_estado = converter_para_matriz(estado)                 # Começa convertendo a string de estado para uma matriz que representa o estado do jogo
+    elemento = descobre_quem_moveu(matriz_estado,acao)            # Descobre qual elemento está se testando o movimento, que depende de qual AÇÂO foi feita
+    distancia = distancia_para_objetivo(matriz_estado,elemento)   # Calcula a distância entre o elemento e seu objetivo de acordo com a distância na matriz
+    return distancia
+                
+def astar_manhattan(estado_inicial):  # Realiza a busca com A* hamming ate encontrar a posicao que corresponde a solucao do jogo.
+    if valida_texto(estado_inicial) is False:  # Verifica se o texto (string) representando a posicao do puzzle e valido.
+        return None
+    if valida_posicao(estado_inicial) is False:  # Verifica se a posicao de entrada do puzzle possui solucao viavel.
+        return None
+    explorados = {}  # Inicializa o dicionario contendo os nos explorados. O estado do tabuleiro sera usado como identificador.
+    raiz = Nodo(estado_inicial, None, '', CUSTOINICIAL, 0)  # Inicializa a raiz com o estado inicial do tabuleiro.
+    fronteira = [raiz]  # Inicializacao da FILA DE PRIORIDADE que representa a fronteira.
+    movimentos = []  # Inicializacao da lista contendo os movimentos do estado inicial ate a solucao.
+
+    while True:  # Iteracao principal para realizar a busca com A* hamming ate encontrar a solucao.
+
+        if fronteira == []:
+            return None
+
+        v = heapq.heappop(fronteira)  # Remove o elemento que possui o MENOR CUSTO TOTAL (custo + manhattan(estado)) adicionado na FILA DE PRIORIDADES.
+
+        if v.estado == OBJETIVO:  # Casos em que foi encontrada a solucao.
+            while v.pai is not None:  # Iteracao para resgatar o caminho de acoes do estado inicial ate a solucao.
+                movimentos.append(v.acao)
+                v = v.pai
+            movimentos.reverse()
+            return movimentos
+
+        if v.estado not in explorados:
+            explorados[v.estado] = v
+            for nodo in expande(v):  # Adiciona todos os vizinhos de v na fronteira.
+                
+                nodo.heuristica = heuristica_manhattan(nodo.estado,nodo.acao)
+                heapq.heappush(fronteira, nodo)
 
 
 def inicia_programa():
     # print(sucessor(POSICAOINICIAL))
-    print(f'bfs: {len(bfs(POSICAOINICIAL))} movimentos')
-    print(f'dfs: {len(dfs(POSICAOINICIAL))} movimentos')
-    print(f'a* hamming: {len(astar_hamming(POSICAOINICIAL))} movimentos')
-    # print(f'a* manhattan: {astar_manhattan(POSICAOINICIAL)}')
+    #print(f'bfs: {len(bfs(POSICAOINICIAL))} movimentos')
+    #print(f'dfs: {len(dfs(POSICAOINICIAL))} movimentos')
+    #print(f'a* hamming: {len(astar_hamming(POSICAOINICIAL))} movimentos')
+    print(f'a* manhattan: {len(astar_manhattan(POSICAOINICIAL))} movimentos')
 
 
 def main():
