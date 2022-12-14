@@ -56,8 +56,7 @@ def valida_texto(estado):  # Verifica se o texto representando a posicao do puzz
 def valida_posicao(estado):  # Verifica se a posicao de entrada do puzzle possui solucao viavel.
     conta_inversoes = 0
 
-    for i in range(
-            len(estado)):  # Iteracoes para contar o numero de inversoes no tabuleiro (baseado em https://www.geeksforgeeks.org/check-instance-8-puzzle-solvable/).
+    for i in range(len(estado)):  # Iteracoes para contar o numero de inversoes no tabuleiro (baseado em https://www.geeksforgeeks.org/check-instance-8-puzzle-solvable/).
         for j in range(i + 1, TOTALPOSICOES):
             if estado[i] != SIMBOLOBRANCO and estado[j] != SIMBOLOBRANCO and estado[i] > estado[j]:
                 conta_inversoes += 1
