@@ -68,8 +68,7 @@ def valida_posicao(estado):  # Verifica se a posicao de entrada do puzzle possui
 
 def movimenta_branco(estado, posicao_branco, posicao_numero):  # Movimenta a posicao em branco, no tabuleiro.
     lista_posicao = list(estado)
-    lista_posicao[posicao_branco], lista_posicao[posicao_numero] = lista_posicao[posicao_numero], lista_posicao[
-        posicao_branco]
+    lista_posicao[posicao_branco], lista_posicao[posicao_numero] = lista_posicao[posicao_numero], lista_posicao[posicao_branco]
     novo_estado = ''.join(lista_posicao)
     return novo_estado
 
