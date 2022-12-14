@@ -256,7 +256,7 @@ def astar_manhattan(estado_inicial):  # Realiza a busca com A* (com a heuristica
         if fronteira == []: # Se nao foi possivel aumentar a fronteira, falhou.
             return None
 
-        v = heapq.heappop(fronteira)  # Remove o elemento que possui o MENOR CUSTO TOTAL (custo + hamming(estado)) adicionado na FILA DE PRIORIDADES.
+        v = heapq.heappop(fronteira)  # Remove o elemento que possui o MENOR CUSTO TOTAL (custo + manhattan(estado)) adicionado na FILA DE PRIORIDADES.
 
         if v.estado == OBJETIVO:  # Casos em que foi encontrada a solucao.
             while v.pai is not None:  # Iteracao para resgatar o caminho de acoes do estado inicial ate a solucao.
