@@ -195,8 +195,7 @@ def heuristica_hamming(estado): # Obtem o valor referente a heuristica de Hammin
     return sum([estado[i] != OBJETIVO[i] for i in range(len(estado))]) # Retorna o valor referente a heuristica de Hamming (numero total de pecas fora do lugar).
 
 def astar_hamming(estado_inicial):  # Realiza a busca com A* (com a heuristica da distancia de Hamming) ate encontrar a posicao que corresponde a solucao do jogo.
-    if valida_texto(
-            estado_inicial) is False:  # Verifica se o texto (string) representando a posicao do puzzle e valido.
+    if valida_texto(estado_inicial) is False:  # Verifica se o texto (string) representando a posicao do puzzle e valido.
         return None
     if valida_posicao(estado_inicial) is False:  # Verifica se a posicao de entrada do puzzle possui solucao viavel.
         return None
