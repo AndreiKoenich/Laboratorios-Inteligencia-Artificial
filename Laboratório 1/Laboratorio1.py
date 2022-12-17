@@ -163,8 +163,7 @@ def bfs(estado_inicial):  # Realiza a busca em largura, ate encontrar a posicao 
             fronteira += expande(v)  # Adiciona todos os vizinhos de v na fronteira.
 
 def dfs(estado_inicial):  # Realiza a busca em largura, ate encontrar a posicao que corresponde a solucao do jogo.
-    if valida_texto(
-            estado_inicial) is False:  # Verifica se o texto (string) representando a posicao do puzzle e valido.
+    if valida_texto(estado_inicial) is False:  # Verifica se o texto (string) representando a posicao do puzzle e valido.
         return None
     if valida_posicao(estado_inicial) is False:  # Verifica se a posicao de entrada do puzzle possui solucao viavel.
         return None
