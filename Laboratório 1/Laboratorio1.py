@@ -6,7 +6,6 @@
 # Jean Smaniotto Argoud   - Cartao 00275602
 # Willian Nunes Reichert  - Cartao 00134090
 
-import time
 import heapq
 
 SIMBOLOBRANCO = '_'             # Constante para indicar o espaco em branco no tabuleiro do 8-puzzle.
