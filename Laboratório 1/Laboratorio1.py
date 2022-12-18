@@ -6,10 +6,11 @@
 # Jean Smaniotto Argoud   - Cartao 00275602
 # Willian Nunes Reichert  - Cartao 00134090
 
+import time
 import heapq
 
 SIMBOLOBRANCO = '_'             # Constante para indicar o espaco em branco no tabuleiro do 8-puzzle.
-POSICAOINICIAL = '2_3541687'    # Constante para representar o estado inicial.
+POSICAOINICIAL = '123_46758'    # Constante para representar o estado inicial.
 OBJETIVO = '12345678_'          # Constante para representar o objetivo do jogo.
 CUSTOINICIAL = 0                # Custo inicial do nodo referente a primeira posicao.
 
@@ -162,7 +163,7 @@ def bfs(estado_inicial):  # Realiza a busca em largura, ate encontrar a posicao 
             explorados[v.estado] = v
             fronteira += expande(v)  # Adiciona todos os vizinhos de v na fronteira.
 
-def dfs(estado_inicial):  # Realiza a busca em profundidade, ate encontrar a posicao que corresponde a solucao do jogo.
+def dfs(estado_inicial):  # Realiza a busca em largura, ate encontrar a posicao que corresponde a solucao do jogo.
     if valida_texto(estado_inicial) is False:  # Verifica se o texto (string) representando a posicao do puzzle e valido.
         return None
     if valida_posicao(estado_inicial) is False:  # Verifica se a posicao de entrada do puzzle possui solucao viavel.
@@ -254,7 +255,7 @@ def astar_manhattan(estado_inicial):  # Realiza a busca com A* (com a heuristica
         if fronteira == []: # Se nao foi possivel aumentar a fronteira, falhou.
             return None
 
-        v = heapq.heappop(fronteira)  # Remove o elemento que possui o MENOR CUSTO TOTAL (custo + manhattan(estado)) adicionado na FILA DE PRIORIDADES.
+        v = heapq.heappop(fronteira)  # Remove o elemento que possui o MENOR CUSTO TOTAL (custo + hamming(estado)) adicionado na FILA DE PRIORIDADES.
 
         if v.estado == OBJETIVO:  # Casos em que foi encontrada a solucao.
             while v.pai is not None:  # Iteracao para resgatar o caminho de acoes do estado inicial ate a solucao.
@@ -270,10 +271,10 @@ def astar_manhattan(estado_inicial):  # Realiza a busca com A* (com a heuristica
                 heapq.heappush(fronteira, nodo)
 
 def inicia_programa():
-    print(f'bfs: {len(bfs(POSICAOINICIAL))} movimentos')
-    print(f'dfs: {len(dfs(POSICAOINICIAL))} movimentos')
-    print(f'a* hamming: {len(astar_hamming(POSICAOINICIAL))} movimentos')
-    print(f'a* manhattan: {len(astar_manhattan(POSICAOINICIAL))} movimentos')
+    #print(bfs(POSICAOINICIAL))
+    #print(dfs(POSICAOINICIAL))
+    #print(astar_hamming(POSICAOINICIAL))
+    #print(astar_manhattan(POSICAOINICIAL))
 
 def main():
     inicia_programa()
