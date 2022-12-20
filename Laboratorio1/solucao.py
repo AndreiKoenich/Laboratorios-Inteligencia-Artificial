@@ -29,7 +29,7 @@ OITAVAPOSICAO = 7
 NONAPOSICAO = 8
 TOTALPOSICOES = 9
 
-TESTE = 0
+TESTE = False
 
 
 class Nodo:
@@ -319,6 +319,12 @@ def astar_hamming(estado):
 def heuristica_manhattan(estado):
     """
     Retorna o valor referente à heurística distância de Manhattan, equivalente à quantidade de peças fora do lugar.
+      Considerando o estado "2_3541687", ele será representado pela lista [1 -1 2 4 3 0 5 7 6], na qual cada número foi
+    subtraído de 1 para que ele também passe a representar sua posição objetivo na lista.
+      Separando a lista em [ 1 -1 2 | 4 3 0 | 5 7 6 ], temos três blocos que representam as três linhas horizontais do
+    tabuleiro. Assim, abs(posicao % 3 - valor % 3) indica quantos movimentos na horizontal o número deverá realizar para
+    chegar na sua coluna, e abs(posicao // 3 - valor // 3) indica quantos movimentos na vertical o número deverá
+    realizar para chegar na sua linha. A soma desses dois resultados nos dá a distância de Manhattan do número.
     :param str estado: estado a ser utilizado no cálculo
     :return: a distância de Manhattan do estado
     """
@@ -327,12 +333,14 @@ def heuristica_manhattan(estado):
     tabuleiro_lista[tabuleiro_lista.index(SIMBOLOBRANCO)] = '0'  # Altera o caractere da posição em branco para zero.
 
     for i in range(len(tabuleiro_lista)):  # Converte cada caractere representando as pecas em valores inteiros.
-        tabuleiro_lista[i] = int(tabuleiro_lista[i])
+        tabuleiro_lista[i] = int(tabuleiro_lista[i]) - 1
 
     # Percorre o tabuleiro calculando as distâncias de cada peça e somando.
-    distancia_manhattan = sum(
-        abs((valor - 1) % 3 - i % 3) + abs((valor - 1) // 3 - i // 3) for i, valor in enumerate(tabuleiro_lista) if
-        valor)
+    distancia_manhattan = 0
+    for posicao, valor in enumerate(tabuleiro_lista):
+        if valor < 0:
+            continue
+        distancia_manhattan += abs(posicao % 3 - valor % 3) + abs(posicao // 3 - valor // 3)
     return distancia_manhattan  # Retorna o valor referente à heurística da distâcia Manhattan.
 
 
@@ -378,9 +386,15 @@ def astar_manhattan(estado):
 
 
 if __name__ == "__main__":
+    """
+    Código utilizado para coletar os dados necessários para cada algoritmo de busca.
+    Para o cálculo do tempo de execução, são realizadas múltiplas execuções a fim de obter um tempo médio, visto que o
+    tempo resultante entre execuções separadas pode ser bem diferente.
+    A flag TESTE serve para habilitar logs dentro das funções que executam os algoritmos.
+    """
     import time
 
-    EXECUCOES = 1
+    EXECUCOES = 25
     tempo = 0
     for k in range(EXECUCOES):
         instante = time.perf_counter()
@@ -409,7 +423,7 @@ if __name__ == "__main__":
         tempo += time.perf_counter() - instante
     tempo_astar_manhattan = tempo/EXECUCOES
 
-    TESTE = 1
+    TESTE = True
     print(f"[bfs] custo: {len(bfs('2_3541687'))} movimentos")
     print(f"[bfs] tempo: {(tempo_bfs * 1000):.5} ms")
     print(f"[dfs] custo: {len(dfs('2_3541687'))} movimentos")

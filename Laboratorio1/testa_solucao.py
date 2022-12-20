@@ -35,6 +35,18 @@ class TestaSolucao(unittest.TestCase):
             # verifica se a tupla com os atributos do nodo esta' presente no conjunto com os nodos esperados
             self.assertIn((nodo.estado, nodo.pai.estado, nodo.acao, nodo.custo), resposta_esperada)
 
+    def test_hamming_dist(self):
+        """
+        Testa o cálculo da distância de Hamming.
+        """
+        self.assertEqual(7, solucao.heuristica_hamming("2_3541687"))
+
+    def test_manhattan_dist(self):
+        """
+        Testa o cálculo da distância de Manhattan.
+        """
+        self.assertEqual(11, solucao.heuristica_manhattan("2_3541687"))
+
     def run_algorithm(self, alg, input):
         """
         Um helper que executa o algoritmo verificando timeout. Falha se der timeout
@@ -62,6 +74,20 @@ class TestaSolucao(unittest.TestCase):
         # nao ha solucao a partir do estado 185423_67
         self.assertIsNone(self.run_algorithm(solucao.bfs, "185423_67"))
 
+    def test_solution_bfs(self):
+        """
+        Testa se os movimentos retornados pela busca BFS levam ao objetivo.
+        """
+        estado = "2_3541687"
+        movimentos: list = self.run_algorithm(solucao.bfs, estado)
+        for i in range(len(movimentos)):
+            movimento = movimentos.pop(0)
+            for succ in solucao.sucessor(estado):
+                if succ[0] == movimento:
+                    estado = succ[1]
+        self.assertEqual("12345678_", estado)
+        self.assertEqual([], movimentos)
+
     def test_run_astar_hamming(self):
         """
         Testa o A* com dist. Hamming em um estado com solução e outro sem solução.
@@ -73,6 +99,20 @@ class TestaSolucao(unittest.TestCase):
 
         # nao ha solucao a partir do estado 185423_67
         self.assertIsNone(self.run_algorithm(solucao.astar_hamming, "185423_67"))
+
+    def test_solution_astar_hamming(self):
+        """
+        Testa se os movimentos retornados pela busca A* hamming levam ao objetivo.
+        """
+        estado = "2_3541687"
+        movimentos: list = self.run_algorithm(solucao.astar_hamming, estado)
+        for i in range(len(movimentos)):
+            movimento = movimentos.pop(0)
+            for succ in solucao.sucessor(estado):
+                if succ[0] == movimento:
+                    estado = succ[1]
+        self.assertEqual("12345678_", estado)
+        self.assertEqual([], movimentos)
 
     def test_run_astar_manhattan(self):
         """
@@ -86,6 +126,20 @@ class TestaSolucao(unittest.TestCase):
         # nao ha solucao a partir do estado 185423_67
         self.assertIsNone(self.run_algorithm(solucao.astar_manhattan, "185423_67"))
 
+    def test_solution_astar_manhattan(self):
+        """
+        Testa se os movimentos retornados pela busca A* manhattan levam ao objetivo.
+        """
+        estado = "2_3541687"
+        movimentos: list = self.run_algorithm(solucao.astar_manhattan, estado)
+        for i in range(len(movimentos)):
+            movimento = movimentos.pop(0)
+            for succ in solucao.sucessor(estado):
+                if succ[0] == movimento:
+                    estado = succ[1]
+        self.assertEqual("12345678_", estado)
+        self.assertEqual([], movimentos)
+
     def test_run_dfs(self):
         """
         Testa o DFS apenas em um estado sem solucao pq ele nao e' obrigado
@@ -93,6 +147,20 @@ class TestaSolucao(unittest.TestCase):
         """
         # nao ha solucao a partir do estado 185423_67
         self.assertIsNone(self.run_algorithm(solucao.dfs, "185423_67"))
+
+    def test_solution_dfs(self):
+        """
+        Testa se os movimentos retornados pela busca DFS levam ao objetivo.
+        """
+        estado = "2_3541687"
+        movimentos: list = self.run_algorithm(solucao.dfs, estado)
+        for i in range(len(movimentos)):
+            movimento = movimentos.pop(0)
+            for succ in solucao.sucessor(estado):
+                if succ[0] == movimento:
+                    estado = succ[1]
+        self.assertEqual("12345678_", estado)
+        self.assertEqual([], movimentos)
 
     def test_run_action_order(self):
         """
