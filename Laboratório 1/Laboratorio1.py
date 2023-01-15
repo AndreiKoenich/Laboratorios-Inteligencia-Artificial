@@ -48,7 +48,7 @@ def valida_texto(estado):  # Verifica se o texto representando a posicao do puzz
         return False
 
     for i in estado:  # Testa se todos os caracteres sao numeros ou espacos em branco.
-        if i == '0':
+        if i == '0' or i == '9':
             return False
         elif not i.isdigit() and i != SIMBOLOBRANCO:
             return False
