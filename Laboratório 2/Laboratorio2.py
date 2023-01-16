@@ -8,15 +8,15 @@
 
 import time
 
-POSICAOINICIAL = [
-'........',
-'........',
-'........',
-'...WB...',
-'...BW...',
-'........',
-'........',
-'........',
+POSICAOTESTE = [
+'....W...',
+'....W...',
+'.WWWWWW.',
+'..WWWWWW',
+'.W.WWW..',
+'W.WWWWWW',
+'...WWW..',
+'..B.WW..'
 ]
 
 POSICAOVAZIA = '.'
@@ -110,7 +110,7 @@ def testa_posicao(tabuleiro,x,y,jogador):
 
 def testa_valida(tabuleiro,jogador):
 
-    for x in range(DIMENSAOTABULEIRO):
+    for x in range(DIMENSAOTABULEIRO): # Percorre todas as posições do tabuleiro, para verificar se existe algum lance válido.
         for y in range(DIMENSAOTABULEIRO):
             if tabuleiro[x][y] == jogador and testa_posicao(tabuleiro,x,y,jogador) == True:
                 return True
@@ -118,7 +118,8 @@ def testa_valida(tabuleiro,jogador):
     return False
 
 def main():
-    print(testa_valida(POSICAOINICIAL,BRANCO))
+    print(testa_valida(POSICAOTESTE, BRANCO))
+    print(testa_valida(POSICAOTESTE, PRETO))
 
 start_time = time.time()
 main()
