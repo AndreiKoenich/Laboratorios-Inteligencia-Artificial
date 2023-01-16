@@ -7,6 +7,7 @@
 # Willian Nunes Reichert  - Cartão 00134090
 
 import time
+import math
 
 POSICAOTESTE = [
 '....W...',
@@ -24,9 +25,24 @@ BRANCO = 'W'
 PRETO = 'B'
 DIMENSAOTABULEIRO = 8
 SEMJOGADAS = -1
+CONSTANTEUCB = math.sqrt(2)
+
+class Nodo:  # Classe para armazenar todas as informações de cada nodo da árvore.
+    def __init__(self, vitorias_,jogadas_, pai_):
+        self.vitorias = vitorias_
+        self.jogadas = jogadas_
+        self.pai = pai_
+
+def calcula_ucb (nodo): # Calcula o valor do critério UCB (Upper Confidence Bound), para um nodo da árvore.
+    if nodo.filhos == []: # Casos em que o nodo não possui filhos.
+        return -1
+
+    # Cálculo do critério UCB, utilizando a fórmula vista em aula.
+    criterio_ucb = (nodo.vitorias/nodo.jogadas) + CONSTANTEUCB*math.sqrt((2*math.log(nodo.pai.jogadas))/nodo.jogadas)
+
+    return criterio_ucb
 
 def testa_posicao(tabuleiro,x,y,jogador):
-
     if jogador == PRETO: # Verifica quem é o adversário.
         adversario = BRANCO
     else:
@@ -109,7 +125,6 @@ def testa_posicao(tabuleiro,x,y,jogador):
     return False # Retorna falso, indicando que não há nenhum lance válido para o jogador.
 
 def testa_valida(tabuleiro,jogador):
-
     for x in range(DIMENSAOTABULEIRO): # Percorre todas as posições do tabuleiro, para verificar se existe algum lance válido.
         for y in range(DIMENSAOTABULEIRO):
             if tabuleiro[x][y] == jogador and testa_posicao(tabuleiro,x,y,jogador) == True:
@@ -123,4 +138,4 @@ def main():
 
 start_time = time.time()
 main()
-print("\n\n---TEMPO DE EXECUÇÃO: %s segundos ---\n\n" % (time.time() - start_time))
+print("\n--- TEMPO DE EXECUÇÃO: %s segundos ---\n" % (time.time() - start_time))
