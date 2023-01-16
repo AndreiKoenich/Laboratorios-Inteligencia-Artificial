@@ -19,7 +19,6 @@ POSICAOTESTE = [
 '...WWW..',
 '..B.WW..'
 ]
-
 POSICAOVAZIA = '.'
 BRANCO = 'W'
 PRETO = 'B'
@@ -28,14 +27,13 @@ SEMJOGADAS = -1
 CONSTANTEUCB = math.sqrt(2)
 
 class Nodo:  # Classe para armazenar todas as informações de cada nodo da árvore.
-    def __init__(self, vitorias_,jogadas_, pai_):
+    def __init__(self, vitorias_,jogadas_, pai_, filhos_):
         self.vitorias = vitorias_
         self.jogadas = jogadas_
         self.pai = pai_
+        self.filhos = filhos_
 
 def calcula_ucb (nodo): # Calcula o valor do critério UCB (Upper Confidence Bound), para um nodo da árvore.
-    if nodo.filhos == []: # Casos em que o nodo não possui filhos.
-        return -1
 
     # Cálculo do critério UCB, utilizando a fórmula vista em aula.
     criterio_ucb = (nodo.vitorias/nodo.jogadas) + CONSTANTEUCB*math.sqrt((2*math.log(nodo.pai.jogadas))/nodo.jogadas)
