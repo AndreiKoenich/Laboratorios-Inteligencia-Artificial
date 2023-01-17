@@ -8,7 +8,6 @@
 
 import time
 import math
-import random
 
 POSICAOINICIAL = [
 '........',
@@ -35,18 +34,7 @@ POSICAOVAZIA = '.'
 BRANCO = 'W'
 PRETO = 'B'
 DIMENSAOTABULEIRO = 8
-SEMJOGADAS = (-1,-1)
 CONSTANTEUCB = math.sqrt(2)
-
-ESQUERDA = 0
-SUPERIORESQUERDA = 1
-CIMA = 2
-SUPERIORDIREITA = 3
-DIREITA = 4
-INFERIORDIREITA = 5
-BAIXO = 6
-INFERIORESQUERDA = 7
-DIRECOES = [ESQUERDA,SUPERIORESQUERDA,CIMA,SUPERIORDIREITA,DIREITA,INFERIORDIREITA,BAIXO,INFERIORESQUERDA]
 
 class Nodo:  # Classe para armazenar todas as informações de cada nodo da árvore.
     def __init__(self, tabuleiro_, vitorias_,jogadas_, pai_, filhos_):
@@ -57,9 +45,8 @@ class Nodo:  # Classe para armazenar todas as informações de cada nodo da árv
         self.filhos = filhos_
 
 def testa_final (tabuleiro): # Verifica se o jogo acabou.
-    if (testa_valida(tabuleiro, BRANCO) == SEMJOGADAS and testa_valida(tabuleiro, PRETO) == SEMJOGADAS):
+    if (acha_lances(tabuleiro, BRANCO) == [] and acha_lances(tabuleiro, PRETO) == []):
         return True
-
     return False
 
 def calcula_ucb (nodo): # Calcula o valor do critério UCB (Upper Confidence Bound), para um nodo da árvore.
@@ -165,109 +152,108 @@ def atualiza_tabuleiro (tabuleiro, x, y, jogador): # Atualiza o tabuleiro, após
 
     return novo_tabuleiro
 
-def calcula_posicao(tabuleiro, x, y, jogador):
+def calcula_lances(tabuleiro, x, y, jogador):
     if jogador == PRETO: # Verifica quem é o adversário.
         adversario = BRANCO
     else:
         adversario = PRETO
 
-    random.shuffle(DIRECOES) # Escolhe a direção do teste para colocação de peça de forma aleatória, até encontrar alguma válida.
+    lista_lances = [] # Lista com todos os lances possíveis de serem feitos com a peça na posição indicada.
 
-    for direcao in DIRECOES:
-        # Abaixo, serão testadas as oito possíveis direções, para verificar se existe ao menos um lance válido.
+    i = 2 # Variável auxiliar, para percorrer as posições do tabuleiro (matriz 8x8) incrementando os índices.
+    if x-1 >= 0 and tabuleiro[y][x-1] == adversario: # Busca uma posição válida para colocar a peça, pela ESQUERDA.
+        while x-i >= 0:
+            if tabuleiro[y][x-i] == POSICAOVAZIA:
+                lista_lances.append((x-i,y))
+                break
+            elif tabuleiro[y][x-i] == jogador:
+                break # Encerra a busca nessa direção, pois não há lances válidos.
+            i = i+1
 
-        if direcao == ESQUERDA:
-            i = 2 # Variável auxiliar, para percorrer as posições do tabuleiro (matriz 8x8) incrementando os índices.
-            if x-1 >= 0 and tabuleiro[y][x-1] == adversario: # Busca uma posição válida para colocar a peça, pela ESQUERDA.
-                while x-i >= 0:
-                    if tabuleiro[y][x-i] == POSICAOVAZIA:
-                        return (x-i,y)
-                    elif tabuleiro[y][x-i] == jogador:
-                        break # Encerra a busca nessa direção, pois não há lances válidos.
-                    i = i+1
+    i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
+    if x+1 < DIMENSAOTABULEIRO and tabuleiro[y][x+1] == adversario: # Busca uma posição válida para colocar a peça, pela DIREITA.
+        while x+i < DIMENSAOTABULEIRO:
+            if tabuleiro[y][x+i] == POSICAOVAZIA:
+                lista_lances.append((x+i,y))
+                break
+            elif tabuleiro[y][x+i] == jogador:
+                break # Encerra a busca nessa direção, pois não há lances válidos.
+            i = i+1
 
-        elif direcao == DIREITA:
-            i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
-            if x+1 < DIMENSAOTABULEIRO and tabuleiro[y][x+1] == adversario: # Busca uma posição válida para colocar a peça, pela DIREITA.
-                while x+i < DIMENSAOTABULEIRO:
-                    if tabuleiro[y][x+i] == POSICAOVAZIA:
-                        return (x+i,y)
-                    elif tabuleiro[y][x+i] == jogador:
-                        break # Encerra a busca nessa direção, pois não há lances válidos.
-                    i = i+1
+    i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
+    if y-1 >= 0 and tabuleiro[y-1][x] == adversario: # Busca uma posição válida para colocar a peça, por CIMA.
+        while y-i >= 0:
+            if tabuleiro[y-i][x] == POSICAOVAZIA:
+                lista_lances.append((x,y-i))
+                break
+            elif tabuleiro[y-i][x] == jogador:
+                break # Encerra a busca nessa direção, pois não há lances válidos.
+            i = i+1
 
-        elif direcao == CIMA:
-            i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
-            if y-1 >= 0 and tabuleiro[y-1][x] == adversario: # Busca uma posição válida para colocar a peça, por CIMA.
-                while y-i >= 0:
-                    if tabuleiro[y-i][x] == POSICAOVAZIA:
-                        return (x,y-i)
-                    elif tabuleiro[y-i][x] == jogador:
-                        break # Encerra a busca nessa direção, pois não há lances válidos.
-                    i = i+1
+    i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
+    if y+1 < DIMENSAOTABULEIRO and tabuleiro[y+1][x] == adversario: # Busca uma posição válida para colocar a peça, por BAIXO.
+        while y+i < DIMENSAOTABULEIRO:
+            if tabuleiro[y+i][x] == POSICAOVAZIA:
+                lista_lances.append((x,y+i))
+                break
+            elif tabuleiro[y+i][x] == jogador:
+                break # Encerra a busca nessa direção, pois não há lances válidos.
+            i = i+1
 
-        elif direcao == BAIXO:
-            i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
-            if y+1 < DIMENSAOTABULEIRO and tabuleiro[y+1][x] == adversario: # Busca uma posição válida para colocar a peça, por BAIXO.
-                while y+i < DIMENSAOTABULEIRO:
-                    if tabuleiro[y+i][x] == POSICAOVAZIA:
-                        return (x,y+i)
-                    elif tabuleiro[y+i][x] == jogador:
-                        break # Encerra a busca nessa direção, pois não há lances válidos.
-                    i = i+1
+    i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
+    if x-1 >= 0 and y-1 >= 0 and tabuleiro[y-1][x-1] == adversario: # Busca uma posição válida para colocar a peça, pela DIAGONAL SUPERIOR ESQUERDA.
+        while x-i >= 0 and y-i >= 0:
+            if tabuleiro[y-i][x-i] == POSICAOVAZIA:
+                lista_lances.append((x-i,y-i))
+                break
+            elif tabuleiro[y-i][x-i] == jogador:
+                break # Encerra a busca nessa direção, pois não há lances válidos.
+            i = i+1
 
-        elif direcao == SUPERIORESQUERDA:
-            i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
-            if x-1 >= 0 and y-1 >= 0 and tabuleiro[y-1][x-1] == adversario: # Busca uma posição válida para colocar a peça, pela DIAGONAL SUPERIOR ESQUERDA.
-                while x-i >= 0 and y-i >= 0:
-                    if tabuleiro[y-i][x-i] == POSICAOVAZIA:
-                        return (x-i,y-i)
-                    elif tabuleiro[y-i][x-i] == jogador:
-                        break # Encerra a busca nessa direção, pois não há lances válidos.
-                    i = i+1
+    i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
+    if x+1 < DIMENSAOTABULEIRO and y-1 >= 0 and tabuleiro[y-1][x+1] == adversario: # Busca uma posição válida para colocar a peça, pela DIAGONAL SUPERIOR DIREITA.
+        while x+i < DIMENSAOTABULEIRO and y-i >= 0:
+            if tabuleiro[y-i][x+i] == POSICAOVAZIA:
+                lista_lances.append((x+i,y-i))
+                break
+            elif tabuleiro[y-i][x+i] == jogador:
+                break # Encerra a busca nessa direção, pois não há lances válidos.
+            i = i+1
 
-        elif direcao == SUPERIORDIREITA:
-            i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
-            if x+1 < DIMENSAOTABULEIRO and y-1 >= 0 and tabuleiro[y-1][x+1] == adversario: # Busca uma posição válida para colocar a peça, pela DIAGONAL SUPERIOR DIREITA.
-                while x+i < DIMENSAOTABULEIRO and y-i >= 0:
-                    if tabuleiro[y-i][x+i] == POSICAOVAZIA:
-                        return (x+i,y-i)
-                    elif tabuleiro[y-i][x+i] == jogador:
-                        break # Encerra a busca nessa direção, pois não há lances válidos.
-                    i = i+1
+    i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
+    if x-1 >= 0 and y+1 < DIMENSAOTABULEIRO and tabuleiro[y+1][x-1] == adversario: # Busca uma posição válida para colocar a peça, pela DIAGONAL INFERIOR ESQUERDA.
+        while x-i >= 0 and y+i < DIMENSAOTABULEIRO:
+            if tabuleiro[y+i][x-i] == POSICAOVAZIA:
+                lista_lances.append((x-i,y+1))
+                break
+            elif tabuleiro[y+i][x-i] == jogador:
+                break # Encerra a busca nessa direção, pois não há lances válidos.
+            i = i+1
 
-        elif direcao == INFERIORESQUERDA:
-            i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
-            if x-i >= 0 and y+1 < DIMENSAOTABULEIRO and tabuleiro[y+1][x-1] == adversario: # Busca uma posição válida para colocar a peça, pela DIAGONAL INFERIOR ESQUERDA.
-                while x-i >= 0 and y+i < DIMENSAOTABULEIRO:
-                    if tabuleiro[y+i][x-i] == POSICAOVAZIA:
-                        return (x-i,y+1)
-                    elif tabuleiro[y+i][x-i] == jogador:
-                        break # Encerra a busca nessa direção, pois não há lances válidos.
-                    i = i+1
+    i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
+    if x+1 < DIMENSAOTABULEIRO and y+1 < DIMENSAOTABULEIRO and tabuleiro[y+1][x+1] == adversario: # Busca uma posição válida para colocar a peça, pela DIAGONAL INFERIOR DIREITA.
+        while x+i < DIMENSAOTABULEIRO and y+i < DIMENSAOTABULEIRO:
+            if tabuleiro[y+i][x+i] == POSICAOVAZIA:
+                lista_lances.append((x+i,y+i))
+                break
+            elif tabuleiro[y+i][x+i] == jogador:
+                break # Encerra a busca nessa direção, pois não há lances válidos.
+            i = i+1
 
-        elif direcao == INFERIORDIREITA:
-            i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
-            if x+1 < DIMENSAOTABULEIRO and y+1 < DIMENSAOTABULEIRO and tabuleiro[y+1][x+1] == adversario: # Busca uma posição válida para colocar a peça, pela DIAGONAL INFERIOR DIREITA.
-                while x+i < DIMENSAOTABULEIRO and y+i < DIMENSAOTABULEIRO:
-                    if tabuleiro[y+i][x+i] == POSICAOVAZIA:
-                        return (x+i,y+i)
-                    elif tabuleiro[y+i][x+i] == jogador:
-                        break # Encerra a busca nessa direção, pois não há lances válidos.
-                    i = i+1
+    return lista_lances
 
-def testa_valida(tabuleiro,jogador):
+def acha_lances(tabuleiro, jogador):
+    todas_jogadas = []
+
     for y in range(DIMENSAOTABULEIRO): # Percorre todas as posições do tabuleiro, para verificar se existe algum lance válido.
         for x in range(DIMENSAOTABULEIRO):
             if tabuleiro[y][x] == jogador:
-                jogada = calcula_posicao(tabuleiro, x, y, jogador)
-                if jogada != SEMJOGADAS:
-                    return jogada
+                todas_jogadas += calcula_lances(tabuleiro, x, y, jogador) # Armazena todas as jogadas possíveis, para o jogador da vez.
 
-    return SEMJOGADAS
+    return todas_jogadas # Retorna a lista com todas as jogadas possíveis.
 
 def main():
-    print(testa_valida(POSICAOTESTE, PRETO))
+    print(acha_lances(POSICAOTESTE,BRANCO))
 
 start_time = time.time()
 main()
