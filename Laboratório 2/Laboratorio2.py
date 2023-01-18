@@ -30,6 +30,7 @@ POSICAOTESTE = [
 '...WWW..',
 '..B.WW..'
 ]
+
 POSICAOVAZIA = '.'
 BRANCO = 'W'
 PRETO = 'B'
@@ -37,8 +38,9 @@ DIMENSAOTABULEIRO = 8
 CONSTANTEUCB = math.sqrt(2)
 
 class Nodo:  # Classe para armazenar todas as informações de cada nodo da árvore.
-    def __init__(self, tabuleiro_, vitorias_,jogadas_, pai_, filhos_):
+    def __init__(self, tabuleiro_,jogador_, vitorias_,jogadas_, pai_, filhos_):
         self.tabuleiro = tabuleiro_
+        self.jogador = jogador_
         self.vitorias = vitorias_
         self.jogadas = jogadas_
         self.pai = pai_
@@ -49,18 +51,38 @@ def testa_final (tabuleiro): # Verifica se o jogo acabou.
         return True
     return False
 
+def acha_ganhador(tabuleiro):
+    pecas_brancas = 0
+    pecas_pretas = 0
+    for y in range(DIMENSAOTABULEIRO):
+        for x in range(DIMENSAOTABULEIRO):
+            if tabuleiro[y][x] == BRANCO:
+                pecas_brancas = pecas_brancas+1
+            elif tabuleiro[y][x] == PRETO:
+                pecas_pretas = pecas_pretas+1
+
+    if pecas_brancas > pecas_pretas:
+        return BRANCO
+    else:
+        return PRETO
+
 def calcula_ucb (nodo): # Calcula o valor do critério UCB (Upper Confidence Bound), para um nodo da árvore.
+    if nodo.jogadas == 0:
+        return 0
+
     criterio_ucb = (nodo.vitorias/nodo.jogadas) + CONSTANTEUCB*math.sqrt((2*math.log(nodo.pai.jogadas))/nodo.jogadas)
     return criterio_ucb
 
-def posiciona_peca(tabuleiro, x, y, jogador): #
-    novo_tabuleiro = tabuleiro
+def posiciona_peca(tabuleiro, x, y, jogador): # Insere a peça no tabuleiro, na posição indicada nas coordenadas x e y.
+    novo_tabuleiro = tabuleiro.copy() # Realiza uma cópia da posição passada como parâmetro, para atualizá-la.
     lista_aux = list(novo_tabuleiro[y])
     lista_aux[x] = jogador
     novo_tabuleiro[y] = ''.join(lista_aux)
     return novo_tabuleiro
 
-def atualiza_tabuleiro (tabuleiro, x, y, jogador): # Atualiza o tabuleiro, após a colocação das peças nas coordenadas x e y indicadas.
+def atualiza_tabuleiro (tabuleiro, coordenadas, jogador): # Atualiza o tabuleiro, após a colocação das peças nas coordenadas x e y indicadas na dupla de coordenadas..
+    x = coordenadas[0]
+    y = coordenadas[1]
     novo_tabuleiro = posiciona_peca(tabuleiro, x, y, jogador)
 
     # Atualiza as cores das peças capturadas, pela ESQUERDA.
@@ -248,12 +270,31 @@ def acha_lances(tabuleiro, jogador):
     for y in range(DIMENSAOTABULEIRO): # Percorre todas as posições do tabuleiro, para verificar se existe algum lance válido.
         for x in range(DIMENSAOTABULEIRO):
             if tabuleiro[y][x] == jogador:
-                todas_jogadas += calcula_lances(tabuleiro, x, y, jogador) # Armazena todas as jogadas possíveis, para o jogador da vez.
+                todas_jogadas += calcula_lances(tabuleiro, x,y, jogador) # Armazena todas as jogadas possíveis, para o jogador da vez.
 
     return todas_jogadas # Retorna a lista com todas as jogadas possíveis.
 
+def calcula_filhos(nodo):
+    filhos = []
+    lances = acha_lances(nodo.tabuleiro,nodo.jogador)
+
+    if nodo.jogador == PRETO:
+        proximo_jogador = BRANCO
+    else:
+        proximo_jogador = PRETO
+
+    for coordenada in lances:
+        proxima_posicao = atualiza_tabuleiro(nodo.tabuleiro,coordenada, nodo.jogador)
+        filhos.append(Nodo(proxima_posicao.copy(),proximo_jogador,0,0,nodo,[]))
+
+    return filhos
+
+def inicia_programa():
+    raiz = Nodo(POSICAOINICIAL,PRETO,0,0,None,[])
+    raiz.filhos = calcula_filhos(raiz)
+
 def main():
-    print(acha_lances(POSICAOTESTE,BRANCO))
+    inicia_programa()
 
 start_time = time.time()
 main()
