@@ -298,7 +298,7 @@ def acha_lances(tabuleiro, jogador):
     lista_final = list(OrderedDict.fromkeys(todas_jogadas)) # Eliminação de jogadas repetidas.
     return lista_final # Retorna a lista com todas as jogadas possíveis.
 
-def calcula_filhos(nodo):
+def expansao(nodo):
     filhos = []
     lances = acha_lances(nodo.tabuleiro,nodo.jogador)
 
@@ -315,12 +315,12 @@ def calcula_filhos(nodo):
 
 def simulacao(raiz):
     nodo_aux = raiz
-    novo_nodo = Nodo('', '', 0, 0, None, [])
+    novo_nodo = Nodo('', '', 0, 0, nodo_aux, [])
 
     while True: # Enquanto houver simulações possíveis, realiza os lances de forma aleatória.
         lances_possiveis = acha_lances(nodo_aux.tabuleiro,nodo_aux.jogador) # Calcula a lista com todos os lances possíveis, na posição atual.
 
-        print('TABULEIRO: ',nodo_aux.tabuleiro, ' JOGADOR: ', nodo_aux.jogador) # TESTE
+        print('TABULEIRO: ',nodo_aux.tabuleiro, ' JOGADOR: ', nodo_aux.jogador) # TESTE, REMOVER DEPOIS
 
         if lances_possiveis == []: # Determina se será necessário passar a vez ou encerrar o jogo.
              nodo_aux.jogador = acha_proximo(nodo_aux.jogador)  # Determina quem será o próximo jogador (branco ou preto).
@@ -338,18 +338,17 @@ def simulacao(raiz):
             proximo_jogador = PRETO
 
         # Atualiza as informações do novo nodo, obtidas na simulação com aleatoriedade.
-        nodo_aux.filhos.append(novo_nodo)
         novo_nodo = Nodo(novo_tabuleiro,proximo_jogador,0,0,nodo_aux,[])
+        nodo_aux.filhos.append(novo_nodo)
         nodo_aux = novo_nodo
 
-    print('VENCEDOR: ', acha_ganhador(nodo_aux.tabuleiro)) # TESTE
+    print('VENCEDOR: ', acha_ganhador(nodo_aux.tabuleiro))  # TESTE, REMOVER DEPOIS
 
-    return raiz # Retorna a árvore atualizada, após a simulação com lances aleatórios.
+    return raiz
 
 def inicia_programa():
     raiz = Nodo(POSICAOINICIAL,PRETO,0,0,None,[])
     raiz = simulacao(raiz)
-    #print(acha_lances(POSICAOTESTE3,BRANCO))
 
 def main():
     inicia_programa()
