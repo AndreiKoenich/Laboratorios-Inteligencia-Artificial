@@ -34,6 +34,7 @@ POSICAOTESTE = [
 POSICAOVAZIA = '.'
 BRANCO = 'W'
 PRETO = 'B'
+EMPATE = 'D'
 DIMENSAOTABULEIRO = 8
 CONSTANTEUCB = math.sqrt(2)
 
@@ -61,10 +62,12 @@ def acha_ganhador(tabuleiro):
             elif tabuleiro[y][x] == PRETO:
                 pecas_pretas = pecas_pretas+1
 
-    if pecas_brancas > pecas_pretas:
-        return BRANCO
-    else:
+    if pecas_pretas == pecas_brancas:
+        return EMPATE
+    elif pecas_pretas > pecas_brancas:
         return PRETO
+    else:
+        return BRANCO
 
 def calcula_ucb (nodo): # Calcula o valor do critério UCB (Upper Confidence Bound), para um nodo da árvore.
     if nodo.jogadas == 0:
@@ -150,7 +153,7 @@ def atualiza_tabuleiro (tabuleiro, coordenadas, jogador): # Atualiza o tabuleiro
                     j = j+1
             i = i+1
 
-    # Atualiza as cores das peças capturadas, pela CANTO INFERIOR ESQUERDO.
+    # Atualiza as cores das peças capturadas, pelo CANTO INFERIOR ESQUERDO.
     i = 2
     if x-1 >= 0 and y+1 < DIMENSAOTABULEIRO:
         while x-i >= 0 and y+i < DIMENSAOTABULEIRO:
@@ -161,7 +164,7 @@ def atualiza_tabuleiro (tabuleiro, coordenadas, jogador): # Atualiza o tabuleiro
                     j = j+1
             i = i+1
 
-    # Atualiza as cores das peças capturadas, pela CANTO INFERIOR DIREITO.
+    # Atualiza as cores das peças capturadas, pelo CANTO INFERIOR DIREITO.
     i = 2
     if x+1 < DIMENSAOTABULEIRO and y+1 < DIMENSAOTABULEIRO:
         while x+i < DIMENSAOTABULEIRO and y+i < DIMENSAOTABULEIRO:
@@ -292,6 +295,9 @@ def calcula_filhos(nodo):
 def inicia_programa():
     raiz = Nodo(POSICAOINICIAL,PRETO,0,0,None,[])
     raiz.filhos = calcula_filhos(raiz)
+    print(raiz.tabuleiro)
+    print(acha_ganhador(POSICAOINICIAL))
+
 
 def main():
     inicia_programa()
