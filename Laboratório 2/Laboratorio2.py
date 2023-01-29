@@ -22,6 +22,8 @@ POSICAOINICIAL = [
 '........',
 ]
 
+POSICAOTESTE =  ['........', '........', '...BW...', '...WWB..', '..WBW...', '...B.W..', '........', '........']
+
 POSICAOVAZIA = '.'
 BRANCO = 'W'
 PRETO = 'B'
@@ -92,88 +94,96 @@ def atualiza_tabuleiro (tabuleiro, coordenadas, jogador): # Atualiza o tabuleiro
     # Abaixo, comandos de seleção para atualizar as cores das peças capturadas, em todas as direções.
 
     # Atualiza as cores das peças capturadas, pela ESQUERDA.
-    i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
+    i = 1 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
     if x-1 >= 0:
-        while x-i >= 0:
+        while x-i >= 0 and novo_tabuleiro[y][x-i] != POSICAOVAZIA:
             if novo_tabuleiro[y][x - i] == jogador:
                 j = 1
-                if novo_tabuleiro[y][x - j] != jogador:
+                while novo_tabuleiro[y][x - j] != jogador:
+                    #print('ESQ')
                     novo_tabuleiro = posiciona_peca(novo_tabuleiro, x-j, y, jogador)
                     j = j+1
             i = i+1
 
     # Atualiza as cores das peças capturadas, pela DIREITA.
-    i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
+    i = 1 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
     if x+1 < DIMENSAOTABULEIRO:
-        while x+i < DIMENSAOTABULEIRO:
+        while x+i < DIMENSAOTABULEIRO and novo_tabuleiro[y][x + i] != POSICAOVAZIA:
             if novo_tabuleiro[y][x + i] == jogador:
                 j = 1
                 while novo_tabuleiro[y][x + j] != jogador:
+                    #print('DIR')
                     novo_tabuleiro = posiciona_peca(novo_tabuleiro, x+j, y, jogador)
                     j = j+1
             i = i+1
 
     # Atualiza as cores das peças capturadas, por CIMA.
-    i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
+    i = 1 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
     if y-1 >= 0:
-        while y-i >= 0:
+        while y-i >= 0 and novo_tabuleiro[y - i][x] != POSICAOVAZIA:
             if novo_tabuleiro[y - i][x] == jogador:
                 j = 1
                 while novo_tabuleiro[y - j][x] != jogador:
+                    #print('CIMA')
                     novo_tabuleiro = posiciona_peca(novo_tabuleiro, x, y-j, jogador)
                     j = j+1
             i = i+1
 
     # Atualiza as cores das peças capturadas, por BAIXO.
-    i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
+    i = 1 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
     if y+1 < DIMENSAOTABULEIRO:
-        while y+i < DIMENSAOTABULEIRO:
+        while y+i < DIMENSAOTABULEIRO and novo_tabuleiro[y + i][x] != POSICAOVAZIA:
             if novo_tabuleiro[y + i][x] == jogador:
                 j = 1
                 while novo_tabuleiro[y + j][x] != jogador:
+                    #print('BAIXO')
                     novo_tabuleiro = posiciona_peca(novo_tabuleiro, x, y+j, jogador)
                     j = j+1
             i = i+1
 
     # Atualiza as cores das peças capturadas, pelo CANTO SUPERIOR ESQUERDO.
-    i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
+    i = 1 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
     if x-1 >= 0 and y-1 >= 0:
-        while x-i >= 0 and y-i >= 0:
+        while x-i >= 0 and y-i >= 0 and novo_tabuleiro[y - i][x - i] != POSICAOVAZIA:
             if novo_tabuleiro[y - i][x - i] == jogador:
                 j = 1
                 while novo_tabuleiro[y - j][x - j] != jogador:
+                    #print('SUP ESQ')
                     novo_tabuleiro = posiciona_peca(novo_tabuleiro, x-j, y-j, jogador)
                     j = j+1
             i = i+1
     # Atualiza as cores das peças capturadas, pelo CANTO SUPERIOR DIREITO.
-    i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
+    i = 1 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
     if x+1 < DIMENSAOTABULEIRO and y-1 >= 0:
-        while x+i < DIMENSAOTABULEIRO and y-i >= 0:
+        while x+i < DIMENSAOTABULEIRO and y-i >= 0 and novo_tabuleiro[y - i][x + i] != POSICAOVAZIA:
             if novo_tabuleiro[y - i][x + i] == jogador:
                 j = 1
                 while novo_tabuleiro[y - j][x + j] != jogador:
+                    #print('SUP DIR')
                     novo_tabuleiro = posiciona_peca(novo_tabuleiro, x+j, y-j, jogador)
                     j = j+1
             i = i+1
 
     # Atualiza as cores das peças capturadas, pelo CANTO INFERIOR ESQUERDO.
-    i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
+    i = 1 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
     if x-1 >= 0 and y+1 < DIMENSAOTABULEIRO:
-        while x-i >= 0 and y+i < DIMENSAOTABULEIRO:
+        while x-i >= 0 and y+i < DIMENSAOTABULEIRO and novo_tabuleiro[y + i][x - i] != POSICAOVAZIA:
             if novo_tabuleiro[y + i][x - i] == jogador:
                 j = 1
                 while novo_tabuleiro[y + j][x - j] != jogador:
+                    #print('INF ESQ')
                     novo_tabuleiro = posiciona_peca(novo_tabuleiro, x-j, y+j, jogador)
                     j = j+1
             i = i+1
 
     # Atualiza as cores das peças capturadas, pelo CANTO INFERIOR DIREITO.
-    i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
+    i = 1 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
     if x+1 < DIMENSAOTABULEIRO and y+1 < DIMENSAOTABULEIRO:
-        while x+i < DIMENSAOTABULEIRO and y+i < DIMENSAOTABULEIRO:
+        while x+i < DIMENSAOTABULEIRO and y+i < DIMENSAOTABULEIRO and novo_tabuleiro[y + i][x + i] != POSICAOVAZIA:
             if novo_tabuleiro[y + i][x + i] == jogador:
                 j = 1
                 while novo_tabuleiro[y + j][x + j] != jogador:
+                    #print('INF DIR')
                     novo_tabuleiro = posiciona_peca(novo_tabuleiro, x+j, y+j, jogador)
                     j = j+1
             i = i+1
@@ -393,6 +403,14 @@ def make_move(tabuleiro, jogador): # Recebe um estado do tabuleiro e o jogador d
     proximo_lance = monte_carlo(raiz,jogador,oponente) # Determina o próximo lance, com o algoritmo Monte Carlo Tree Search (MCTS).
     return proximo_lance # Retorna o próximo lance.
 
+def conta_pecas(tabuleiro):
+    pecas = 0
+    for y in range(DIMENSAOTABULEIRO): # Percorre todas as posições do tabuleiro, para verificar se existe algum lance válido.
+        for x in range(DIMENSAOTABULEIRO):
+            if tabuleiro[y][x] != POSICAOVAZIA:
+                pecas += 1
+    print('PECAS: ',pecas)
+
 def teste_botbranco(): # TESTE, REMOVER DEPOIS
     tabuleiro = POSICAOINICIAL
 
@@ -403,11 +421,13 @@ def teste_botbranco(): # TESTE, REMOVER DEPOIS
             proximo_lance = lista_lancespreto[indice_aleatorio(lista_lancespreto)]
             tabuleiro = atualiza_tabuleiro(tabuleiro,proximo_lance,PRETO)
             print('TABULEIRO: ', tabuleiro, 'ULTIMO JOGADOR: ', PRETO) # TESTE, REMOVER DEPOIS
+            conta_pecas(tabuleiro)
 
         proximo_lance = make_move(tabuleiro,BRANCO)
         if (proximo_lance != SEMLANCES):
             tabuleiro = atualiza_tabuleiro(tabuleiro,proximo_lance,BRANCO)
             print('TABULEIRO: ', tabuleiro, 'ULTIMO JOGADOR: ', BRANCO) # TESTE, REMOVER DEPOIS
+            conta_pecas(tabuleiro)
 
         if (proximo_lance == SEMLANCES and lista_lancespreto == []):
             break
@@ -428,6 +448,7 @@ def teste_botpreto(): # TESTE, REMOVER DEPOIS
         if (proximo_lance != SEMLANCES):
             tabuleiro = atualiza_tabuleiro(tabuleiro,proximo_lance,PRETO)
             print('TABULEIRO: ', tabuleiro, 'ULTIMO JOGADOR: ', PRETO) # TESTE, REMOVER DEPOIS
+            conta_pecas(tabuleiro)
 
         lista_lancesbranco = acha_lances(tabuleiro, BRANCO)
 
@@ -435,6 +456,7 @@ def teste_botpreto(): # TESTE, REMOVER DEPOIS
             proximo_lance = lista_lancesbranco[indice_aleatorio(lista_lancesbranco)]
             tabuleiro = atualiza_tabuleiro(tabuleiro,proximo_lance,BRANCO)
             print('TABULEIRO: ', tabuleiro, 'ULTIMO JOGADOR: ', BRANCO) # TESTE, REMOVER DEPOIS
+            conta_pecas(tabuleiro)
 
         if (proximo_lance == SEMLANCES and lista_lancesbranco == []):
             break
@@ -448,9 +470,9 @@ def teste_botpreto(): # TESTE, REMOVER DEPOIS
         print('BOT EMPATOU JOGANDO DE PRETAS')
 
 def main():
-    while True: # Deixa o BOT jogando até você encerrar a execução!
-        teste_botpreto() # TESTA COM O BOT ASSUMINDO AS PEÇAS PRETAS
-        teste_botbranco() # TESTA COM O BOT ASSUMINDO AS PEÇAS BRANCAS
+    while True:  # Deixa o BOT jogando até você encerrar a execução!
+        teste_botpreto()  # TESTA COM O BOT ASSUMINDO AS PEÇAS PRETAS
+        teste_botbranco()  # TESTA COM O BOT ASSUMINDO AS PEÇAS BRANCAS
 
 start_time = time.time()
 main()
