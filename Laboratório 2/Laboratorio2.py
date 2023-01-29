@@ -35,8 +35,7 @@ POSICAOTESTE = [
 
 POSICAOTESTE2 = ['BBBBBBBB', 'BBBBBBBB', 'BBBBWBWB', '..WWBBBB', '...WWBBB', '...WWBWB', '...WWWWB', '...WWWWB']
 POSICAOTESTE3 = ['BBWWWWWW', 'WBWWBBWW', 'WWBWWWBW', 'WWBBWBBW', 'WWBBBWBW', 'WWBWBWBW', 'WWBBWWWW', '.WBBWW..']
-
-
+POSICAOTESTE4 = ['WWWWWWWW', 'BBBBBBBB','........', '........', '........', '........', '........', '........']
 
 POSICAOVAZIA = '.'
 BRANCO = 'W'
@@ -44,15 +43,20 @@ PRETO = 'B'
 EMPATE = 'D'
 DIMENSAOTABULEIRO = 8
 CONSTANTEUCB = math.sqrt(2)
+SEMLANCES = (-1,-1)
+
+TOTALSIMULACOES_INICIO = 300
+TOTALSIMULACOES_MONTECARLO = 2300
 
 class Nodo:  # Classe para armazenar todas as informações de cada nodo da árvore.
-    def __init__(self, tabuleiro_,jogador_, vitorias_,jogadas_, pai_, filhos_):
+    def __init__(self, tabuleiro_,jogador_, vitorias_,jogadas_, pai_, filhos_, ucb_):
         self.tabuleiro = tabuleiro_
         self.jogador = jogador_
         self.vitorias = vitorias_
         self.jogadas = jogadas_
         self.pai = pai_
         self.filhos = filhos_
+        self.ucb = ucb_
 
 def acha_ganhador(tabuleiro):
     pecas_brancas = 0
@@ -200,7 +204,6 @@ def calcula_lances(tabuleiro, x, y, jogador):
     if x-1 >= 0 and tabuleiro[y][x-1] == adversario: # Busca uma posição válida para colocar a peça, pela ESQUERDA.
         while x-i >= 0:
             if tabuleiro[y][x-i] == POSICAOVAZIA:
-                #print('ESQ')
                 lista_lances.append((x-i,y))
                 break
             elif tabuleiro[y][x-i] == jogador:
@@ -211,7 +214,6 @@ def calcula_lances(tabuleiro, x, y, jogador):
     if x+1 < DIMENSAOTABULEIRO and tabuleiro[y][x+1] == adversario: # Busca uma posição válida para colocar a peça, pela DIREITA.
         while x+i < DIMENSAOTABULEIRO:
             if tabuleiro[y][x+i] == POSICAOVAZIA:
-                #print('DIR')
                 lista_lances.append((x+i,y))
                 break
             elif tabuleiro[y][x+i] == jogador:
@@ -222,7 +224,6 @@ def calcula_lances(tabuleiro, x, y, jogador):
     if y-1 >= 0 and tabuleiro[y-1][x] == adversario: # Busca uma posição válida para colocar a peça, por CIMA.
         while y-i >= 0:
             if tabuleiro[y-i][x] == POSICAOVAZIA:
-                #print('CIMA')
                 lista_lances.append((x,y-i))
                 break
             elif tabuleiro[y-i][x] == jogador:
@@ -233,7 +234,6 @@ def calcula_lances(tabuleiro, x, y, jogador):
     if y+1 < DIMENSAOTABULEIRO and tabuleiro[y+1][x] == adversario: # Busca uma posição válida para colocar a peça, por BAIXO.
         while y+i < DIMENSAOTABULEIRO:
             if tabuleiro[y+i][x] == POSICAOVAZIA:
-                #print('BAIXO')
                 lista_lances.append((x,y+i))
                 break
             elif tabuleiro[y+i][x] == jogador:
@@ -244,7 +244,6 @@ def calcula_lances(tabuleiro, x, y, jogador):
     if x-1 >= 0 and y-1 >= 0 and tabuleiro[y-1][x-1] == adversario: # Busca uma posição válida para colocar a peça, pela DIAGONAL SUPERIOR ESQUERDA.
         while x-i >= 0 and y-i >= 0:
             if tabuleiro[y-i][x-i] == POSICAOVAZIA:
-                #print('SUP ESQ')
                 lista_lances.append((x-i,y-i))
                 break
             elif tabuleiro[y-i][x-i] == jogador:
@@ -255,7 +254,6 @@ def calcula_lances(tabuleiro, x, y, jogador):
     if x+1 < DIMENSAOTABULEIRO and y-1 >= 0 and tabuleiro[y-1][x+1] == adversario: # Busca uma posição válida para colocar a peça, pela DIAGONAL SUPERIOR DIREITA.
         while x+i < DIMENSAOTABULEIRO and y-i >= 0:
             if tabuleiro[y-i][x+i] == POSICAOVAZIA:
-                #print('SUP DIR')
                 lista_lances.append((x+i,y-i))
                 break
             elif tabuleiro[y-i][x+i] == jogador:
@@ -266,7 +264,6 @@ def calcula_lances(tabuleiro, x, y, jogador):
     if x-1 >= 0 and y+1 < DIMENSAOTABULEIRO and tabuleiro[y+1][x-1] == adversario: # Busca uma posição válida para colocar a peça, pela DIAGONAL INFERIOR ESQUERDA.
         while x-i >= 0 and y+i < DIMENSAOTABULEIRO:
             if tabuleiro[y+i][x-i] == POSICAOVAZIA:
-                #print('INF ESQ')
                 lista_lances.append((x-i,y+i))
                 break
             elif tabuleiro[y+i][x-i] == jogador:
@@ -277,7 +274,6 @@ def calcula_lances(tabuleiro, x, y, jogador):
     if x+1 < DIMENSAOTABULEIRO and y+1 < DIMENSAOTABULEIRO and tabuleiro[y+1][x+1] == adversario: # Busca uma posição válida para colocar a peça, pela DIAGONAL INFERIOR DIREITA.
         while x+i < DIMENSAOTABULEIRO and y+i < DIMENSAOTABULEIRO:
             if tabuleiro[y+i][x+i] == POSICAOVAZIA:
-                #print('INF DIR')
                 lista_lances.append((x+i,y+i))
                 break
             elif tabuleiro[y+i][x+i] == jogador:
@@ -298,6 +294,22 @@ def acha_lances(tabuleiro, jogador):
     lista_final = list(OrderedDict.fromkeys(todas_jogadas)) # Eliminação de jogadas repetidas.
     return lista_final # Retorna a lista com todas as jogadas possíveis.
 
+def selecao(raiz): # Realiza a etapa de SELEÇÃO do Monte Carlo Tree Search (MCTS).
+    for filho in raiz.filhos:  # Iteração para atualizar o critério UCB de cada nodo filho.
+        filho.ucb = calcula_ucb(filho)
+
+    maior_ucb = raiz.filhos[0].ucb
+    indice_aux = 0
+    indice_melhor = 0
+
+    for indice_aux in range(len(raiz.filhos)):  # Iteração para verificar qual nodo possui o melhor critério UCB (SELEÇÃO).
+        if raiz.filhos[indice_aux].ucb > maior_ucb:
+            maior_ucb = filho.ucb
+            indice_melhor = indice_aux  # Faz a SELEÇÃO.
+
+    # Retorna o índice que corresponde ao nodo da lista de filhos com o melhor critério UCB.
+    return indice_melhor
+
 def expansao(nodo):
     filhos = []
     lances = acha_lances(nodo.tabuleiro,nodo.jogador)
@@ -309,22 +321,21 @@ def expansao(nodo):
 
     for coordenada in lances:
         proxima_posicao = atualiza_tabuleiro(nodo.tabuleiro,coordenada, nodo.jogador)
-        filhos.append(Nodo(proxima_posicao.copy(),proximo_jogador,0,0,nodo,[]))
+        filhos.append(Nodo(proxima_posicao.copy(),proximo_jogador,0,0,nodo,[],0))
 
     return filhos
 
 def simulacao(raiz):
-    nodo_aux = raiz
-    novo_nodo = Nodo('', '', 0, 0, nodo_aux, [])
+    nodo_aux = Nodo(raiz.tabuleiro,raiz.jogador,raiz.vitorias,raiz.jogadas,raiz.pai,raiz.filhos,raiz.ucb)
 
     while True: # Enquanto houver simulações possíveis, realiza os lances de forma aleatória.
         lances_possiveis = acha_lances(nodo_aux.tabuleiro,nodo_aux.jogador) # Calcula a lista com todos os lances possíveis, na posição atual.
 
-        print('TABULEIRO: ',nodo_aux.tabuleiro, ' JOGADOR: ', nodo_aux.jogador) # TESTE, REMOVER DEPOIS
+        #print('TABULEIRO: ',nodo_aux.tabuleiro, ' JOGADOR: ', nodo_aux.jogador) # TESTE, REMOVER DEPOIS
 
         if lances_possiveis == []: # Determina se será necessário passar a vez ou encerrar o jogo.
              nodo_aux.jogador = acha_proximo(nodo_aux.jogador)  # Determina quem será o próximo jogador (branco ou preto).
-             lances_possiveis = acha_lances(nodo_aux.tabuleiro,nodo_aux.jogador)  # Calcula a lista com todos os lances possíveis, na posição atual.
+             lances_possiveis = acha_lances(nodo_aux.tabuleiro,nodo_aux.jogador)  # Calcula a lista com todos os lances possíveis, na posição atual, passando a vez.
              if lances_possiveis == []:
                  break
 
@@ -338,20 +349,96 @@ def simulacao(raiz):
             proximo_jogador = PRETO
 
         # Atualiza as informações do novo nodo, obtidas na simulação com aleatoriedade.
-        novo_nodo = Nodo(novo_tabuleiro,proximo_jogador,0,0,nodo_aux,[])
+        novo_nodo = Nodo(novo_tabuleiro,proximo_jogador,0,0,nodo_aux,[],0)
         nodo_aux.filhos.append(novo_nodo)
         nodo_aux = novo_nodo
 
-    print('VENCEDOR: ', acha_ganhador(nodo_aux.tabuleiro))  # TESTE, REMOVER DEPOIS
+    resultado = acha_ganhador(nodo_aux.tabuleiro)
+    #print('VENCEDOR: ', resultado)  # TESTE, REMOVER DEPOIS
+    return resultado
 
-    return raiz
+def monte_carlo(raiz,jogador,oponente):
+    simulacoes = 0
+    while simulacoes < TOTALSIMULACOES_MONTECARLO:
+        indice_melhor = selecao(raiz) # Etapa de SELEÇÃO do algoritmo Monte Carlo Tree Search (MCTS).
+        vencedor = simulacao(raiz.filhos[indice_melhor]) # Etapa de SIMULAÇÃO do algoritmo Monte Carlo Tree Search (MCTS).
+        simulacoes += 1
+        # Etapa de RETROPROPAGAÇÃO do algoritmo Monte Carlo Tree Search (MCTS).
+        raiz.jogadas += 1
+        raiz.filhos[indice_melhor].jogadas += 1
+        if vencedor == jogador:
+            raiz.filhos[indice_melhor].vitorias += 1
+        elif vencedor == oponente:
+            raiz.filhos[indice_melhor].vitorias -= 1
 
-def inicia_programa():
-    raiz = Nodo(POSICAOINICIAL,PRETO,0,0,None,[])
-    raiz = simulacao(raiz)
+    lista_lances = acha_lances(raiz.tabuleiro,jogador)
+    return lista_lances[indice_melhor]
+
+def make_move(tabuleiro, jogador):
+
+    if acha_lances(tabuleiro,jogador) == []:
+        return SEMLANCES
+
+    raiz = Nodo(tabuleiro,jogador,0,TOTALSIMULACOES_INICIO,None,[],0)
+    raiz.filhos = expansao(raiz) # Etapa de EXPANSÃO do algoritmo Monte Carlo Tree Search (MCTS).
+
+    if jogador == PRETO:
+        oponente = BRANCO
+    else:
+        oponente = PRETO
+
+    simulacoes = 0 # Contador de simulacoes, para verificar se o limite foi atingido.
+
+    while simulacoes < TOTALSIMULACOES_INICIO: # Iteração para realizar simulações até o limite desejado.
+        for filho in raiz.filhos: # Percorre a lista de todos os filhos expandidos, realizando as simulações.
+            vencedor = simulacao(filho) # Realiza algumas simulações iniciais, antes de aplicar o Monte Carlo Tree Search (MCTS).
+            filho.jogadas += 1
+            if vencedor == jogador:
+                filho.vitorias += 1
+            elif vencedor == oponente:
+                filho.vitorias -= 1
+            simulacoes += 1
+
+    # Realiza as aplicações das etapas de SELEÇÃO, SIMULAÇÃO, EXPANSÃO e RETROPROPAGAÇÃO, após realizar as simulações iniciais.
+    proximo_lance = monte_carlo(raiz,jogador,oponente) # Determina o próximo lance, com o algoritmo Monte Carlo Tree Search (MCTS).
+    return proximo_lance # Retorna o próximo lance.
+
+def teste_botpreto(): # TESTE, REMOVER DEPOIS
+
+    tabuleiro = POSICAOINICIAL
+
+    while True:
+        proximo_lance = make_move(tabuleiro,PRETO)
+        if (proximo_lance != SEMLANCES):
+            tabuleiro = atualiza_tabuleiro(tabuleiro,proximo_lance,PRETO)
+            print('TABULEIRO: ', tabuleiro, 'ULTIMO JOGADOR: ', PRETO)
+
+        lista_lancesbranco = acha_lances(tabuleiro, BRANCO)
+
+        if (lista_lancesbranco != []):
+            proximo_lance = lista_lancesbranco[0]
+            tabuleiro = atualiza_tabuleiro(tabuleiro,proximo_lance,BRANCO)
+            print('TABULEIRO: ', tabuleiro, 'ULTIMO JOGADOR: ', BRANCO)
+
+        if (proximo_lance == SEMLANCES and lista_lancesbranco == []):
+            break
+
+    resultado = acha_ganhador(tabuleiro)
+    print('VENCEDOR: ', resultado)  # TESTE, REMOVER DEPOIS
+
+    pretas = 0
+    brancas = 0
+    for y in range(DIMENSAOTABULEIRO): # Percorre todas as posições do tabuleiro, para verificar se existe algum lance válido.
+        for x in range(DIMENSAOTABULEIRO):
+            if tabuleiro[y][x] == PRETO:
+                pretas += 1
+            elif tabuleiro[y][x] == BRANCO:
+                brancas += 1
+
+    print(pretas,' x ',brancas)
 
 def main():
-    inicia_programa()
+    teste_botpreto()
 
 start_time = time.time()
 main()
