@@ -1,6 +1,6 @@
 # UNIVERSIDADE FEDERAL DO RIO GRANDE DO SUL - Semestre 2022/02
 
-# Trabalho 2 - Monte Carlo Tree Search em Othello/Reversi
+# Trabalho 2 - Poda alfa-beta ou MCTS em Othello/Reversi
 
 # Andrei Pochmann Koenich - Cartão 00308680
 # Jean Smaniotto Argoud   - Cartão 00275602
@@ -414,14 +414,13 @@ def teste_botbranco(): # TESTE, REMOVER DEPOIS
 
     resultado = acha_ganhador(tabuleiro)
     if (resultado == PRETO):
-        print('PERDEU')
+        print('BOT PERDEU JOGANDO DE BRANCAS')
     elif (resultado == BRANCO):
-        print('VENCEU')
+        print('BOT VENCEU JOGANDO DE BRANCAS')
     else:
-        print('EMPATOU')
+        print('BOT EMPATOU JOGANDO DE BRANCAS')
 
 def teste_botpreto(): # TESTE, REMOVER DEPOIS
-
     tabuleiro = POSICAOINICIAL
 
     while True:
@@ -442,11 +441,11 @@ def teste_botpreto(): # TESTE, REMOVER DEPOIS
 
     resultado = acha_ganhador(tabuleiro)
     if (resultado == PRETO):
-        print('VENCEU')
+        print('BOT VENCEU JOGANDO DE PRETAS')
     elif (resultado == BRANCO):
-        print('PERDEU')
+        print('BOT PERDEU JOGANDO DE PRETAS')
     else:
-        print('EMPATOU')
+        print('BOT EMPATOU JOGANDO DE PRETAS')
 
 def main():
     while True: # Deixa o BOT jogando até você encerrar a execução!
