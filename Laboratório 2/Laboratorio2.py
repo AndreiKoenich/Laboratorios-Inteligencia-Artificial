@@ -411,7 +411,7 @@ def teste_botbranco(): # TESTE, REMOVER DEPOIS
         lista_lancespreto = acha_lances(tabuleiro, PRETO)
 
         if (lista_lancespreto != []):
-            proximo_lance = lista_lancespreto[0]
+            proximo_lance = lista_lancespreto[indice_aleatorio(lista_lancespreto)]
             tabuleiro = atualiza_tabuleiro(tabuleiro,proximo_lance,PRETO)
             print('TABULEIRO: ', tabuleiro, 'ULTIMO JOGADOR: ', PRETO)
 
@@ -450,7 +450,7 @@ def teste_botpreto(): # TESTE, REMOVER DEPOIS
         lista_lancesbranco = acha_lances(tabuleiro, BRANCO)
 
         if (lista_lancesbranco != []):
-            proximo_lance = lista_lancesbranco[0]
+            proximo_lance = lista_lancesbranco[indice_aleatorio(lista_lancesbranco)]
             tabuleiro = atualiza_tabuleiro(tabuleiro,proximo_lance,BRANCO)
             print('TABULEIRO: ', tabuleiro, 'ULTIMO JOGADOR: ', BRANCO)
 
@@ -472,8 +472,9 @@ def teste_botpreto(): # TESTE, REMOVER DEPOIS
     print(pretas,' x ',brancas)
 
 def main():
-    #teste_botpreto() # TESTA COM O BOT ASSUMINDO AS PEÇAS PRETAS
-    teste_botbranco() # TESTA COM O BOT ASSUMINDO AS PEÇAS BRANCAS
+    while True: # Deixa o BOT jogando até você encerrar a execução!
+        teste_botpreto() # TESTA COM O BOT ASSUMINDO AS PEÇAS PRETAS
+        teste_botbranco() # TESTA COM O BOT ASSUMINDO AS PEÇAS BRANCAS
 
 start_time = time.time()
 main()
