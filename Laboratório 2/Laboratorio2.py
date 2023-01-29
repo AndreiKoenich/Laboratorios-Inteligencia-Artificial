@@ -1,6 +1,6 @@
 # UNIVERSIDADE FEDERAL DO RIO GRANDE DO SUL - Semestre 2022/02
 
-# Trabalho 2 - Poda alfa-beta ou MCTS em Othello/Reversi
+# Trabalho 2 - Monte Carlo Tree Search em Othello/Reversi
 
 # Andrei Pochmann Koenich - Cartão 00308680
 # Jean Smaniotto Argoud   - Cartão 00275602
@@ -22,21 +22,6 @@ POSICAOINICIAL = [
 '........',
 ]
 
-POSICAOTESTE = [
-'....W...',
-'....W...',
-'.WWWWWW.',
-'..WWWWWW',
-'.W.WWW..',
-'W.WWWWWW',
-'...WWW..',
-'..B.WW..'
-]
-
-POSICAOTESTE2 = ['BBBBBBBB', 'BBBBBBBB', 'BBBBWBWB', '..WWBBBB', '...WWBBB', '...WWBWB', '...WWWWB', '...WWWWB']
-POSICAOTESTE3 = ['BBWWWWWW', 'WBWWBBWW', 'WWBWWWBW', 'WWBBWBBW', 'WWBBBWBW', 'WWBWBWBW', 'WWBBWWWW', '.WBBWW..']
-POSICAOTESTE4 = ['WWWWWWWW', 'BBBBBBBB','........', '........', '........', '........', '........', '........']
-
 POSICAOVAZIA = '.'
 BRANCO = 'W'
 PRETO = 'B'
@@ -45,8 +30,8 @@ DIMENSAOTABULEIRO = 8
 CONSTANTEUCB = math.sqrt(2)
 SEMLANCES = (-1,-1)
 
-TOTALSIMULACOES_INICIO = 300
-TOTALSIMULACOES_MONTECARLO = 2300
+TOTALSIMULACOES_INICIO = 300 # Quantidade de simulações anteriores à aplicação do Monte Carlo Tree Search (MCTS).
+TOTALSIMULACOES_MONTECARLO = 2300 # Quantida de simulações que serão realizadas no Monte Carlo Tree Search (MCTS).
 
 class Nodo:  # Classe para armazenar todas as informações de cada nodo da árvore.
     def __init__(self, tabuleiro_,jogador_, vitorias_,jogadas_, pai_, filhos_, ucb_):
@@ -58,25 +43,25 @@ class Nodo:  # Classe para armazenar todas as informações de cada nodo da árv
         self.filhos = filhos_
         self.ucb = ucb_
 
-def acha_ganhador(tabuleiro):
+def acha_ganhador(tabuleiro): # Obtem um tabuleiro, e verifica qual dos dois jogadores venceu (ou se ocorreu empate).
     pecas_brancas = 0
     pecas_pretas = 0
-    for y in range(DIMENSAOTABULEIRO):
+    for y in range(DIMENSAOTABULEIRO): # Percorre o tabuleiro, contando a quantidade de peças brancas e negras.
         for x in range(DIMENSAOTABULEIRO):
             if tabuleiro[y][x] == BRANCO:
                 pecas_brancas = pecas_brancas+1
             elif tabuleiro[y][x] == PRETO:
                 pecas_pretas = pecas_pretas+1
 
-    if pecas_pretas == pecas_brancas:
+    if pecas_pretas == pecas_brancas: # Retorna o jogador vencedor (ou empate).
         return EMPATE
     elif pecas_pretas > pecas_brancas:
         return PRETO
     else:
         return BRANCO
 
-def acha_proximo(jogador):
-    if jogador == PRETO:  # Determina quem será o próximo jogador (branco ou preto).
+def acha_proximo(jogador): # Determina quem será o próximo jogador da vez (branco ou preto).
+    if jogador == PRETO:
         return BRANCO
     else:
         return PRETO
@@ -85,6 +70,7 @@ def calcula_ucb (nodo): # Calcula o valor do critério UCB (Upper Confidence Bou
     if nodo.jogadas == 0:
         return 0
 
+    # Cálculo segundo a fórmula vista em aula https://www.youtube.com/watch?v=sjRFGR-KQpc
     criterio_ucb = (nodo.vitorias/nodo.jogadas) + CONSTANTEUCB*math.sqrt((2*math.log(nodo.pai.jogadas))/nodo.jogadas)
     return criterio_ucb
 
@@ -99,9 +85,11 @@ def indice_aleatorio(lista): # Recebe uma lista, e retorna um índice aleatório
     return random.randint(0,len(lista)-1)
 
 def atualiza_tabuleiro (tabuleiro, coordenadas, jogador): # Atualiza o tabuleiro, após a colocação das peças nas coordenadas x e y indicadas na dupla de coordenadas..
-    x = coordenadas[0]
+    x = coordenadas[0] # Extração dos valores X e Y da tupla recebida como parâmetro.
     y = coordenadas[1]
-    novo_tabuleiro = posiciona_peca(tabuleiro, x, y, jogador)
+    novo_tabuleiro = posiciona_peca(tabuleiro, x, y, jogador) # Insere a nova peça no tabuleiro.
+
+    # Abaixo, comandos de seleção para atualizar as cores das peças capturadas, em todas as direções.
 
     # Atualiza as cores das peças capturadas, pela ESQUERDA.
     i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
@@ -190,15 +178,17 @@ def atualiza_tabuleiro (tabuleiro, coordenadas, jogador): # Atualiza o tabuleiro
                     j = j+1
             i = i+1
 
-    return novo_tabuleiro
+    return novo_tabuleiro # Retorna o tabuleiro atualizado, após as capturas de peças.
 
-def calcula_lances(tabuleiro, x, y, jogador):
+def calcula_lances(tabuleiro, x, y, jogador): # Determina todos os lances possíveis de serem jogados, em uma certa posição, por um dos jogadores.
     if jogador == PRETO: # Verifica quem é o adversário.
         adversario = BRANCO
     else:
         adversario = PRETO
 
     lista_lances = [] # Lista com todos os lances possíveis de serem feitos com a peça na posição indicada.
+
+    # Abaixo, comandos de seleção para verificar todos os lances possíveis, em todas as direções.
 
     i = 2 # Variável auxiliar, para percorrer as posições do tabuleiro (matriz 8x8) incrementando os índices.
     if x-1 >= 0 and tabuleiro[y][x-1] == adversario: # Busca uma posição válida para colocar a peça, pela ESQUERDA.
@@ -208,7 +198,7 @@ def calcula_lances(tabuleiro, x, y, jogador):
                 break
             elif tabuleiro[y][x-i] == jogador:
                 break # Encerra a busca nessa direção, pois não há lances válidos.
-            i = i+1
+            i += 1
 
     i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
     if x+1 < DIMENSAOTABULEIRO and tabuleiro[y][x+1] == adversario: # Busca uma posição válida para colocar a peça, pela DIREITA.
@@ -218,7 +208,7 @@ def calcula_lances(tabuleiro, x, y, jogador):
                 break
             elif tabuleiro[y][x+i] == jogador:
                 break # Encerra a busca nessa direção, pois não há lances válidos.
-            i = i+1
+            i += 1
 
     i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
     if y-1 >= 0 and tabuleiro[y-1][x] == adversario: # Busca uma posição válida para colocar a peça, por CIMA.
@@ -228,7 +218,7 @@ def calcula_lances(tabuleiro, x, y, jogador):
                 break
             elif tabuleiro[y-i][x] == jogador:
                 break # Encerra a busca nessa direção, pois não há lances válidos.
-            i = i+1
+            i += 1
 
     i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
     if y+1 < DIMENSAOTABULEIRO and tabuleiro[y+1][x] == adversario: # Busca uma posição válida para colocar a peça, por BAIXO.
@@ -238,7 +228,7 @@ def calcula_lances(tabuleiro, x, y, jogador):
                 break
             elif tabuleiro[y+i][x] == jogador:
                 break # Encerra a busca nessa direção, pois não há lances válidos.
-            i = i+1
+            i += 1
 
     i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
     if x-1 >= 0 and y-1 >= 0 and tabuleiro[y-1][x-1] == adversario: # Busca uma posição válida para colocar a peça, pela DIAGONAL SUPERIOR ESQUERDA.
@@ -248,7 +238,7 @@ def calcula_lances(tabuleiro, x, y, jogador):
                 break
             elif tabuleiro[y-i][x-i] == jogador:
                 break # Encerra a busca nessa direção, pois não há lances válidos.
-            i = i+1
+            i += 1
 
     i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
     if x+1 < DIMENSAOTABULEIRO and y-1 >= 0 and tabuleiro[y-1][x+1] == adversario: # Busca uma posição válida para colocar a peça, pela DIAGONAL SUPERIOR DIREITA.
@@ -258,7 +248,7 @@ def calcula_lances(tabuleiro, x, y, jogador):
                 break
             elif tabuleiro[y-i][x+i] == jogador:
                 break # Encerra a busca nessa direção, pois não há lances válidos.
-            i = i+1
+            i += 1
 
     i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
     if x-1 >= 0 and y+1 < DIMENSAOTABULEIRO and tabuleiro[y+1][x-1] == adversario: # Busca uma posição válida para colocar a peça, pela DIAGONAL INFERIOR ESQUERDA.
@@ -268,7 +258,7 @@ def calcula_lances(tabuleiro, x, y, jogador):
                 break
             elif tabuleiro[y+i][x-i] == jogador:
                 break # Encerra a busca nessa direção, pois não há lances válidos.
-            i = i+1
+            i += 1
 
     i = 2 # Reinicia o valor da variável auxiliar para o próximo teste, em outra direção.
     if x+1 < DIMENSAOTABULEIRO and y+1 < DIMENSAOTABULEIRO and tabuleiro[y+1][x+1] == adversario: # Busca uma posição válida para colocar a peça, pela DIAGONAL INFERIOR DIREITA.
@@ -278,20 +268,19 @@ def calcula_lances(tabuleiro, x, y, jogador):
                 break
             elif tabuleiro[y+i][x+i] == jogador:
                 break # Encerra a busca nessa direção, pois não há lances válidos.
-            i = i+1
+            i += 1
 
-    #print(x,y,lista_lances)
-    return lista_lances
+    return lista_lances # Retorna todas as listas
 
 def acha_lances(tabuleiro, jogador):
-    todas_jogadas = []
+    todas_jogadas = [] # Lista que conterá todas as jogadas possíveis, considerando o estado atual do tabuleiro e o jogador da vez.
 
     for y in range(DIMENSAOTABULEIRO): # Percorre todas as posições do tabuleiro, para verificar se existe algum lance válido.
         for x in range(DIMENSAOTABULEIRO):
             if tabuleiro[y][x] == jogador:
                 todas_jogadas += calcula_lances(tabuleiro, x,y, jogador) # Armazena todas as jogadas possíveis, para o jogador da vez.
 
-    lista_final = list(OrderedDict.fromkeys(todas_jogadas)) # Eliminação de jogadas repetidas.
+    lista_final = list(OrderedDict.fromkeys(todas_jogadas)) # Eliminação de jogadas repetidas, da lista de jogadas possíveis.
     return lista_final # Retorna a lista com todas as jogadas possíveis.
 
 def selecao(raiz): # Realiza a etapa de SELEÇÃO do Monte Carlo Tree Search (MCTS).
@@ -310,25 +299,26 @@ def selecao(raiz): # Realiza a etapa de SELEÇÃO do Monte Carlo Tree Search (MC
     # Retorna o índice que corresponde ao nodo da lista de filhos com o melhor critério UCB.
     return indice_melhor
 
-def expansao(nodo):
-    filhos = []
-    lances = acha_lances(nodo.tabuleiro,nodo.jogador)
+def expansao(nodo): # Realiza a etapa de EXPANSÃO do Monte Carlo Tree Search (MCTS).
+    filhos = [] # Lista que irá conter todos os filhos do nodo atual do jogo.
+    lances = acha_lances(nodo.tabuleiro,nodo.jogador) # Determina todos os lances possíveis.
 
-    if nodo.jogador == PRETO:
+    if nodo.jogador == PRETO: # Determina quem será o próximo jogador, depois dessa vez.
         proximo_jogador = BRANCO
     else:
         proximo_jogador = PRETO
 
     for coordenada in lances:
-        proxima_posicao = atualiza_tabuleiro(nodo.tabuleiro,coordenada, nodo.jogador)
-        filhos.append(Nodo(proxima_posicao.copy(),proximo_jogador,0,0,nodo,[],0))
+        proxima_posicao = atualiza_tabuleiro(nodo.tabuleiro,coordenada, nodo.jogador) # Atualiza o tabuleiro com cada um dos lances possíveis, para armazenar os estados.
+        filhos.append(Nodo(proxima_posicao.copy(),proximo_jogador,0,0,nodo,[],0)) # Armazena os estados possíveis do tabuleiro, para cada lance.
 
-    return filhos
+    return filhos # Retorna a lista com todos os nodos filhos.
 
-def simulacao(raiz):
+def simulacao(raiz): # Realiza a etapa de SIMULAÇÃO do Monte Carlo Tree Search (MCTS).
+    # Nodo auxiliar, para percorrer a árvore do jogo, da raiz até a folha.
     nodo_aux = Nodo(raiz.tabuleiro,raiz.jogador,raiz.vitorias,raiz.jogadas,raiz.pai,raiz.filhos,raiz.ucb)
 
-    while True: # Enquanto houver simulações possíveis, realiza os lances de forma aleatória.
+    while True: # Enquanto houver simulações possíveis, realiza os lances de forma aleatória (SIMULAÇÃO).
         lances_possiveis = acha_lances(nodo_aux.tabuleiro,nodo_aux.jogador) # Calcula a lista com todos os lances possíveis, na posição atual.
 
         #print('TABULEIRO: ',nodo_aux.tabuleiro, ' JOGADOR: ', nodo_aux.jogador) # TESTE, REMOVER DEPOIS
@@ -339,7 +329,7 @@ def simulacao(raiz):
              if lances_possiveis == []:
                  break
 
-        indice = indice_aleatorio(lances_possiveis)
+        indice = indice_aleatorio(lances_possiveis) # Determina um índice aleatório, da lista de lances possíveis.
         lance_aleatorio = lances_possiveis[indice] # Determina um lance aleatório possível.
         novo_tabuleiro = atualiza_tabuleiro(nodo_aux.tabuleiro,lance_aleatorio,nodo_aux.jogador) # Determina o estado do novo tabuleiro, com jogada aleatória.
 
@@ -353,7 +343,7 @@ def simulacao(raiz):
         nodo_aux.filhos.append(novo_nodo)
         nodo_aux = novo_nodo
 
-    resultado = acha_ganhador(nodo_aux.tabuleiro)
+    resultado = acha_ganhador(nodo_aux.tabuleiro) # Determina quem ganhou a partida, ou se a partida empatou.
     #print('VENCEDOR: ', resultado)  # TESTE, REMOVER DEPOIS
     return resultado
 
@@ -363,6 +353,7 @@ def monte_carlo(raiz,jogador,oponente):
         indice_melhor = selecao(raiz) # Etapa de SELEÇÃO do algoritmo Monte Carlo Tree Search (MCTS).
         vencedor = simulacao(raiz.filhos[indice_melhor]) # Etapa de SIMULAÇÃO do algoritmo Monte Carlo Tree Search (MCTS).
         simulacoes += 1
+
         # Etapa de RETROPROPAGAÇÃO do algoritmo Monte Carlo Tree Search (MCTS).
         raiz.jogadas += 1
         raiz.filhos[indice_melhor].jogadas += 1
@@ -374,12 +365,11 @@ def monte_carlo(raiz,jogador,oponente):
     lista_lances = acha_lances(raiz.tabuleiro,jogador)
     return lista_lances[indice_melhor]
 
-def make_move(tabuleiro, jogador):
-
-    if acha_lances(tabuleiro,jogador) == []:
+def make_move(tabuleiro, jogador): # Recebe um estado do tabuleiro e o jogador da vez, e retorna o melhor lance.
+    if acha_lances(tabuleiro,jogador) == []: # Verifica se existe algum lance válido.
         return SEMLANCES
 
-    raiz = Nodo(tabuleiro,jogador,0,TOTALSIMULACOES_INICIO,None,[],0)
+    raiz = Nodo(tabuleiro,jogador,0,TOTALSIMULACOES_INICIO,None,[],0) #
     raiz.filhos = expansao(raiz) # Etapa de EXPANSÃO do algoritmo Monte Carlo Tree Search (MCTS).
 
     if jogador == PRETO:
@@ -404,7 +394,6 @@ def make_move(tabuleiro, jogador):
     return proximo_lance # Retorna o próximo lance.
 
 def teste_botbranco(): # TESTE, REMOVER DEPOIS
-
     tabuleiro = POSICAOINICIAL
 
     while True:
@@ -413,29 +402,23 @@ def teste_botbranco(): # TESTE, REMOVER DEPOIS
         if (lista_lancespreto != []):
             proximo_lance = lista_lancespreto[indice_aleatorio(lista_lancespreto)]
             tabuleiro = atualiza_tabuleiro(tabuleiro,proximo_lance,PRETO)
-            print('TABULEIRO: ', tabuleiro, 'ULTIMO JOGADOR: ', PRETO)
+            print('TABULEIRO: ', tabuleiro, 'ULTIMO JOGADOR: ', PRETO) # TESTE, REMOVER DEPOIS
 
         proximo_lance = make_move(tabuleiro,BRANCO)
         if (proximo_lance != SEMLANCES):
             tabuleiro = atualiza_tabuleiro(tabuleiro,proximo_lance,BRANCO)
-            print('TABULEIRO: ', tabuleiro, 'ULTIMO JOGADOR: ', BRANCO)
+            print('TABULEIRO: ', tabuleiro, 'ULTIMO JOGADOR: ', BRANCO) # TESTE, REMOVER DEPOIS
 
         if (proximo_lance == SEMLANCES and lista_lancespreto == []):
             break
 
     resultado = acha_ganhador(tabuleiro)
-    print('VENCEDOR: ', resultado)  # TESTE, REMOVER DEPOIS
-
-    pretas = 0
-    brancas = 0
-    for y in range(DIMENSAOTABULEIRO): # Percorre todas as posições do tabuleiro, para verificar se existe algum lance válido.
-        for x in range(DIMENSAOTABULEIRO):
-            if tabuleiro[y][x] == PRETO:
-                pretas += 1
-            elif tabuleiro[y][x] == BRANCO:
-                brancas += 1
-
-    print(pretas,' x ',brancas)
+    if (resultado == PRETO):
+        print('PERDEU')
+    elif (resultado == BRANCO):
+        print('VENCEU')
+    else:
+        print('EMPATOU')
 
 def teste_botpreto(): # TESTE, REMOVER DEPOIS
 
@@ -445,31 +428,25 @@ def teste_botpreto(): # TESTE, REMOVER DEPOIS
         proximo_lance = make_move(tabuleiro,PRETO)
         if (proximo_lance != SEMLANCES):
             tabuleiro = atualiza_tabuleiro(tabuleiro,proximo_lance,PRETO)
-            print('TABULEIRO: ', tabuleiro, 'ULTIMO JOGADOR: ', PRETO)
+            print('TABULEIRO: ', tabuleiro, 'ULTIMO JOGADOR: ', PRETO) # TESTE, REMOVER DEPOIS
 
         lista_lancesbranco = acha_lances(tabuleiro, BRANCO)
 
         if (lista_lancesbranco != []):
             proximo_lance = lista_lancesbranco[indice_aleatorio(lista_lancesbranco)]
             tabuleiro = atualiza_tabuleiro(tabuleiro,proximo_lance,BRANCO)
-            print('TABULEIRO: ', tabuleiro, 'ULTIMO JOGADOR: ', BRANCO)
+            print('TABULEIRO: ', tabuleiro, 'ULTIMO JOGADOR: ', BRANCO) # TESTE, REMOVER DEPOIS
 
         if (proximo_lance == SEMLANCES and lista_lancesbranco == []):
             break
 
     resultado = acha_ganhador(tabuleiro)
-    print('VENCEDOR: ', resultado)  # TESTE, REMOVER DEPOIS
-
-    pretas = 0
-    brancas = 0
-    for y in range(DIMENSAOTABULEIRO): # Percorre todas as posições do tabuleiro, para verificar se existe algum lance válido.
-        for x in range(DIMENSAOTABULEIRO):
-            if tabuleiro[y][x] == PRETO:
-                pretas += 1
-            elif tabuleiro[y][x] == BRANCO:
-                brancas += 1
-
-    print(pretas,' x ',brancas)
+    if (resultado == PRETO):
+        print('VENCEU')
+    elif (resultado == BRANCO):
+        print('PERDEU')
+    else:
+        print('EMPATOU')
 
 def main():
     while True: # Deixa o BOT jogando até você encerrar a execução!
