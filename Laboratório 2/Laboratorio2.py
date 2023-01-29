@@ -403,6 +403,40 @@ def make_move(tabuleiro, jogador):
     proximo_lance = monte_carlo(raiz,jogador,oponente) # Determina o próximo lance, com o algoritmo Monte Carlo Tree Search (MCTS).
     return proximo_lance # Retorna o próximo lance.
 
+def teste_botbranco(): # TESTE, REMOVER DEPOIS
+
+    tabuleiro = POSICAOINICIAL
+
+    while True:
+        lista_lancespreto = acha_lances(tabuleiro, PRETO)
+
+        if (lista_lancespreto != []):
+            proximo_lance = lista_lancespreto[0]
+            tabuleiro = atualiza_tabuleiro(tabuleiro,proximo_lance,PRETO)
+            print('TABULEIRO: ', tabuleiro, 'ULTIMO JOGADOR: ', PRETO)
+
+        proximo_lance = make_move(tabuleiro,BRANCO)
+        if (proximo_lance != SEMLANCES):
+            tabuleiro = atualiza_tabuleiro(tabuleiro,proximo_lance,BRANCO)
+            print('TABULEIRO: ', tabuleiro, 'ULTIMO JOGADOR: ', BRANCO)
+
+        if (proximo_lance == SEMLANCES and lista_lancespreto == []):
+            break
+
+    resultado = acha_ganhador(tabuleiro)
+    print('VENCEDOR: ', resultado)  # TESTE, REMOVER DEPOIS
+
+    pretas = 0
+    brancas = 0
+    for y in range(DIMENSAOTABULEIRO): # Percorre todas as posições do tabuleiro, para verificar se existe algum lance válido.
+        for x in range(DIMENSAOTABULEIRO):
+            if tabuleiro[y][x] == PRETO:
+                pretas += 1
+            elif tabuleiro[y][x] == BRANCO:
+                brancas += 1
+
+    print(pretas,' x ',brancas)
+
 def teste_botpreto(): # TESTE, REMOVER DEPOIS
 
     tabuleiro = POSICAOINICIAL
@@ -438,7 +472,7 @@ def teste_botpreto(): # TESTE, REMOVER DEPOIS
     print(pretas,' x ',brancas)
 
 def main():
-    teste_botpreto()
+    teste_botbranco()
 
 start_time = time.time()
 main()
