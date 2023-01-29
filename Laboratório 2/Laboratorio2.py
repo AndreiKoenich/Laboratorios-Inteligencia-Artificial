@@ -473,7 +473,7 @@ def teste_botpreto(): # TESTE, REMOVER DEPOIS
 
 def main():
     #teste_botpreto() # TESTA COM O BOT ASSUMINDO AS PEÇAS PRETAS
-    teste_botbranco() # TESTA COM O BOT ASSUMINDO AS PEÇAS NEGRAS
+    teste_botbranco() # TESTA COM O BOT ASSUMINDO AS PEÇAS BRANCAS
 
 start_time = time.time()
 main()
