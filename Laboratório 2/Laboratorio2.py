@@ -33,7 +33,7 @@ CONSTANTEUCB = math.sqrt(2)
 SEMLANCES = (-1,-1)
 
 TOTALSIMULACOES_INICIO = 100 # Quantidade de simulações anteriores à aplicação do Monte Carlo Tree Search (MCTS).
-TOTALSIMULACOES_MONTECARLO = 2000 # Quantida de simulações que serão realizadas no Monte Carlo Tree Search (MCTS).
+LIMITETEMPO = 4.5 # Limite do tempo de execução do Monte Carlo Tree Search (MCTS).
 
 class Nodo:  # Classe para armazenar todas as informações de cada nodo da árvore.
     def __init__(self, tabuleiro_,jogador_, vitorias_,jogadas_, pai_, filhos_, ucb_):
@@ -359,7 +359,8 @@ def simulacao(raiz): # Realiza a etapa de SIMULAÇÃO do Monte Carlo Tree Search
 
 def monte_carlo(raiz,jogador,oponente):
     simulacoes = 0
-    while simulacoes < TOTALSIMULACOES_MONTECARLO:
+    tempo_inicio = time.time()
+    while time.time()-tempo_inicio < LIMITETEMPO: # Enquanto não atingir o limite de tempo de execução, continua explorando o jogo.
         indice_melhor = selecao(raiz) # Etapa de SELEÇÃO do algoritmo Monte Carlo Tree Search (MCTS).
         vencedor = simulacao(raiz.filhos[indice_melhor]) # Etapa de SIMULAÇÃO do algoritmo Monte Carlo Tree Search (MCTS).
         simulacoes += 1
@@ -470,9 +471,10 @@ def teste_botpreto(): # TESTE, REMOVER DEPOIS
         print('BOT EMPATOU JOGANDO DE PRETAS')
 
 def main():
-    while True:  # Deixa o BOT jogando até você encerrar a execução!
-        teste_botpreto()  # TESTA COM O BOT ASSUMINDO AS PEÇAS PRETAS
-        teste_botbranco()  # TESTA COM O BOT ASSUMINDO AS PEÇAS BRANCAS
+    #while True: # Deixa o BOT jogando até você encerrar a execução!
+        #teste_botpreto() # TESTA COM O BOT ASSUMINDO AS PEÇAS PRETAS
+        #teste_botbranco() # TESTA COM O BOT ASSUMINDO AS PEÇAS BRANCAS
+    print(make_move(POSICAOINICIAL,PRETO))
 
 start_time = time.time()
 main()
