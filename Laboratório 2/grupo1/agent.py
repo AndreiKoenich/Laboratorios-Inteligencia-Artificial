@@ -34,7 +34,7 @@ CONSTANTEUCB = math.sqrt(2)
 SEMLANCES = (-1,-1)
 
 TOTALSIMULACOES_INICIO = 100 # Quantidade de simulações anteriores à aplicação do Monte Carlo Tree Search (MCTS).
-LIMITETEMPO = 4.5
+LIMITETEMPO = 4.5 # Limite do tempo de execução do Monte Carlo Tree Search (MCTS).
 
 class Nodo:  # Classe para armazenar todas as informações de cada nodo da árvore.
     def __init__(self, tabuleiro_,jogador_, vitorias_,jogadas_, pai_, filhos_, ucb_):
