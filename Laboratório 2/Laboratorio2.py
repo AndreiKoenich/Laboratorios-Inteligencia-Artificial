@@ -402,7 +402,7 @@ def make_move(tabuleiro, jogador): # Recebe um estado do tabuleiro e o jogador d
     proximo_lance = monte_carlo(raiz,jogador,oponente) # Determina o próximo lance, com o algoritmo Monte Carlo Tree Search (MCTS).
     return proximo_lance # Retorna o próximo lance.
 
-def conta_pecas(tabuleiro):
+def conta_pecas(tabuleiro):  # TESTE, REMOVER DEPOIS
     pecas = 0
     for y in range(DIMENSAOTABULEIRO): # Percorre todas as posições do tabuleiro, para verificar se existe algum lance válido.
         for x in range(DIMENSAOTABULEIRO):
