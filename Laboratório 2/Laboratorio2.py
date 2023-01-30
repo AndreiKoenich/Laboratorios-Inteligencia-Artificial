@@ -331,7 +331,7 @@ def simulacao(raiz): # Realiza a etapa de SIMULAÇÃO do Monte Carlo Tree Search
     while True: # Enquanto houver simulações possíveis, realiza os lances de forma aleatória (SIMULAÇÃO).
         lances_possiveis = acha_lances(nodo_aux.tabuleiro,nodo_aux.jogador) # Calcula a lista com todos os lances possíveis, na posição atual.
 
-        #print('TABULEIRO: ',nodo_aux.tabuleiro, ' JOGADOR: ', nodo_aux.jogador) # TESTE, REMOVER DEPOIS
+        print('TABULEIRO: ',nodo_aux.tabuleiro, ' JOGADOR: ', nodo_aux.jogador) # TESTE, REMOVER DEPOIS
 
         if lances_possiveis == []: # Determina se será necessário passar a vez ou encerrar o jogo.
              nodo_aux.jogador = acha_proximo(nodo_aux.jogador)  # Determina quem será o próximo jogador (branco ou preto).
@@ -354,7 +354,7 @@ def simulacao(raiz): # Realiza a etapa de SIMULAÇÃO do Monte Carlo Tree Search
         nodo_aux = novo_nodo
 
     resultado = acha_ganhador(nodo_aux.tabuleiro) # Determina quem ganhou a partida, ou se a partida empatou.
-    #print('VENCEDOR: ', resultado)  # TESTE, REMOVER DEPOIS
+    print('VENCEDOR: ', resultado)  # TESTE, REMOVER DEPOIS
     return resultado
 
 def monte_carlo(raiz,jogador,oponente):
