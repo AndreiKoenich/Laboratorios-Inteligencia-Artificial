@@ -1,6 +1,6 @@
 # UNIVERSIDADE FEDERAL DO RIO GRANDE DO SUL - Semestre 2022/02
 
-# Trabalho 2 - Poda alfa-beta ou MCTS em Othello/Reversi
+# Trabalho 2 - Monte Carlo Tree Search em Othello/Reversi
 
 # Andrei Pochmann Koenich - Cartão 00308680
 # Jean Smaniotto Argoud   - Cartão 00275602
