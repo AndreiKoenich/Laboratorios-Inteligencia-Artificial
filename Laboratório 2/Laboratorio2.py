@@ -30,8 +30,8 @@ DIMENSAOTABULEIRO = 8
 CONSTANTEUCB = math.sqrt(2)
 SEMLANCES = (-1,-1)
 
-TOTALSIMULACOES_INICIO = 100 # Quantidade de simulações anteriores à aplicação do Monte Carlo Tree Search (MCTS).
-LIMITETEMPO = 4.5 # Limite do tempo de execução do Monte Carlo Tree Search (MCTS).
+TOTALSIMULACOES_INICIO = 200 # Quantidade de simulações anteriores à aplicação do Monte Carlo Tree Search (MCTS).
+LIMITETEMPO = 4.4 # Limite do tempo de execução do Monte Carlo Tree Search (MCTS).
 
 class Nodo:  # Classe para armazenar todas as informações de cada nodo da árvore.
     def __init__(self, tabuleiro_,jogador_, vitorias_,jogadas_, pai_, filhos_, ucb_):
@@ -329,8 +329,6 @@ def simulacao(raiz): # Realiza a etapa de SIMULAÇÃO do Monte Carlo Tree Search
     while True: # Enquanto houver simulações possíveis, realiza os lances de forma aleatória (SIMULAÇÃO).
         lances_possiveis = acha_lances(nodo_aux.tabuleiro,nodo_aux.jogador) # Calcula a lista com todos os lances possíveis, na posição atual.
 
-        print('TABULEIRO: ',nodo_aux.tabuleiro, ' JOGADOR: ', nodo_aux.jogador) # TESTE, REMOVER DEPOIS
-
         if lances_possiveis == []: # Determina se será necessário passar a vez ou encerrar o jogo.
              nodo_aux.jogador = acha_proximo(nodo_aux.jogador)  # Determina quem será o próximo jogador (branco ou preto).
              lances_possiveis = acha_lances(nodo_aux.tabuleiro,nodo_aux.jogador)  # Calcula a lista com todos os lances possíveis, na posição atual, passando a vez.
@@ -352,7 +350,6 @@ def simulacao(raiz): # Realiza a etapa de SIMULAÇÃO do Monte Carlo Tree Search
         nodo_aux = novo_nodo
 
     resultado = acha_ganhador(nodo_aux.tabuleiro) # Determina quem ganhou a partida, ou se a partida empatou.
-    print('VENCEDOR: ', resultado)  # TESTE, REMOVER DEPOIS
     return resultado
 
 def monte_carlo(raiz,jogador,oponente):
@@ -419,14 +416,14 @@ def teste_botbranco(): # TESTE, REMOVER DEPOIS
         if (lista_lancespreto != []):
             proximo_lance = lista_lancespreto[indice_aleatorio(lista_lancespreto)]
             tabuleiro = atualiza_tabuleiro(tabuleiro,proximo_lance,PRETO)
-            print('TABULEIRO: ', tabuleiro, 'ULTIMO JOGADOR: ', PRETO) # TESTE, REMOVER DEPOIS
-            conta_pecas(tabuleiro)
+            #print('TABULEIRO: ', tabuleiro, 'ULTIMO JOGADOR: ', PRETO) # TESTE, REMOVER DEPOIS
+            #conta_pecas(tabuleiro)
 
         proximo_lance = make_move(tabuleiro,BRANCO)
         if (proximo_lance != SEMLANCES):
             tabuleiro = atualiza_tabuleiro(tabuleiro,proximo_lance,BRANCO)
-            print('TABULEIRO: ', tabuleiro, 'ULTIMO JOGADOR: ', BRANCO) # TESTE, REMOVER DEPOIS
-            conta_pecas(tabuleiro)
+            #print('TABULEIRO: ', tabuleiro, 'ULTIMO JOGADOR: ', BRANCO) # TESTE, REMOVER DEPOIS
+            #conta_pecas(tabuleiro)
 
         if (proximo_lance == SEMLANCES and lista_lancespreto == []):
             break
@@ -446,16 +443,16 @@ def teste_botpreto(): # TESTE, REMOVER DEPOIS
         proximo_lance = make_move(tabuleiro,PRETO)
         if (proximo_lance != SEMLANCES):
             tabuleiro = atualiza_tabuleiro(tabuleiro,proximo_lance,PRETO)
-            print('TABULEIRO: ', tabuleiro, 'ULTIMO JOGADOR: ', PRETO) # TESTE, REMOVER DEPOIS
-            conta_pecas(tabuleiro)
+            #print('TABULEIRO: ', tabuleiro, 'ULTIMO JOGADOR: ', PRETO) # TESTE, REMOVER DEPOIS
+            #conta_pecas(tabuleiro)
 
         lista_lancesbranco = acha_lances(tabuleiro, BRANCO)
 
         if (lista_lancesbranco != []):
             proximo_lance = lista_lancesbranco[indice_aleatorio(lista_lancesbranco)]
             tabuleiro = atualiza_tabuleiro(tabuleiro,proximo_lance,BRANCO)
-            print('TABULEIRO: ', tabuleiro, 'ULTIMO JOGADOR: ', BRANCO) # TESTE, REMOVER DEPOIS
-            conta_pecas(tabuleiro)
+            #print('TABULEIRO: ', tabuleiro, 'ULTIMO JOGADOR: ', BRANCO) # TESTE, REMOVER DEPOIS
+            #conta_pecas(tabuleiro)
 
         if (proximo_lance == SEMLANCES and lista_lancesbranco == []):
             break
@@ -469,10 +466,10 @@ def teste_botpreto(): # TESTE, REMOVER DEPOIS
         print('BOT EMPATOU JOGANDO DE PRETAS')
 
 def main():
-    #while True: # Deixa o BOT jogando até você encerrar a execução!
-        #teste_botpreto() # TESTA COM O BOT ASSUMINDO AS PEÇAS PRETAS
-        #teste_botbranco() # TESTA COM O BOT ASSUMINDO AS PEÇAS BRANCAS
-    print(make_move(POSICAOINICIAL,PRETO))
+    while True: # Deixa o BOT jogando até você encerrar a execução!
+        teste_botpreto() # TESTA COM O BOT ASSUMINDO AS PEÇAS PRETAS
+        teste_botbranco() # TESTA COM O BOT ASSUMINDO AS PEÇAS BRANCAS
+    #print(make_move(POSICAOINICIAL,PRETO))
 
 start_time = time.time()
 main()
