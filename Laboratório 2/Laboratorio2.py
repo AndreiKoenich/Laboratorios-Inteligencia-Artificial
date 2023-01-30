@@ -22,8 +22,6 @@ POSICAOINICIAL = [
 '........',
 ]
 
-POSICAOTESTE =  ['........', '........', '...BW...', '...WWB..', '..WBW...', '...B.W..', '........', '........']
-
 POSICAOVAZIA = '.'
 BRANCO = 'W'
 PRETO = 'B'
