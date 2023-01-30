@@ -32,8 +32,8 @@ DIMENSAOTABULEIRO = 8
 CONSTANTEUCB = math.sqrt(2)
 SEMLANCES = (-1,-1)
 
-TOTALSIMULACOES_INICIO = 300 # Quantidade de simulações anteriores à aplicação do Monte Carlo Tree Search (MCTS).
-TOTALSIMULACOES_MONTECARLO = 2300 # Quantida de simulações que serão realizadas no Monte Carlo Tree Search (MCTS).
+TOTALSIMULACOES_INICIO = 100 # Quantidade de simulações anteriores à aplicação do Monte Carlo Tree Search (MCTS).
+TOTALSIMULACOES_MONTECARLO = 2000 # Quantida de simulações que serão realizadas no Monte Carlo Tree Search (MCTS).
 
 class Nodo:  # Classe para armazenar todas as informações de cada nodo da árvore.
     def __init__(self, tabuleiro_,jogador_, vitorias_,jogadas_, pai_, filhos_, ucb_):
