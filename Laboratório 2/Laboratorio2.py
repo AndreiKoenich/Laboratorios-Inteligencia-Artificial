@@ -433,10 +433,10 @@ def teste_botbranco(): # TESTE, REMOVER DEPOIS
     resultado = acha_ganhador(tabuleiro)
     if (resultado == PRETO):
         print('BOT PERDEU JOGANDO DE BRANCAS')
-        registra_resultado(BRANCO,VITORIA)
+        registra_resultado(BRANCO,DERROTA)
     elif (resultado == BRANCO):
         print('BOT VENCEU JOGANDO DE BRANCAS')
-        registra_resultado(BRANCO,DERROTA)
+        registra_resultado(BRANCO,VITORIA)
     else:
         print('BOT EMPATOU JOGANDO DE BRANCAS')
         registra_resultado(BRANCO,EMPATE)
