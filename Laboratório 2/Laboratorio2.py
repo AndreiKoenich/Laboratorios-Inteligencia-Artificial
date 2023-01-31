@@ -25,7 +25,9 @@ POSICAOINICIAL = [
 POSICAOVAZIA = '.'
 BRANCO = 'W'
 PRETO = 'B'
-EMPATE = 'D'
+EMPATE = 'E'
+VITORIA = 'V'
+DERROTA = 'D'
 DIMENSAOTABULEIRO = 8
 CONSTANTEUCB = math.sqrt(2)
 SEMLANCES = (-1,-1)
@@ -434,10 +436,13 @@ def teste_botbranco(): # TESTE, REMOVER DEPOIS
     resultado = acha_ganhador(tabuleiro)
     if (resultado == PRETO):
         print('BOT PERDEU JOGANDO DE BRANCAS')
+        registra_resultado(BRANCO,VITORIA)
     elif (resultado == BRANCO):
         print('BOT VENCEU JOGANDO DE BRANCAS')
+        registra_resultado(BRANCO,DERROTA)
     else:
         print('BOT EMPATOU JOGANDO DE BRANCAS')
+        registra_resultado(BRANCO,EMPATE)
 
 def teste_botpreto(): # TESTE, REMOVER DEPOIS
     tabuleiro = POSICAOINICIAL
@@ -463,10 +468,43 @@ def teste_botpreto(): # TESTE, REMOVER DEPOIS
     resultado = acha_ganhador(tabuleiro)
     if (resultado == PRETO):
         print('BOT VENCEU JOGANDO DE PRETAS')
+        registra_resultado(PRETO,VITORIA)
     elif (resultado == BRANCO):
         print('BOT PERDEU JOGANDO DE PRETAS')
+        registra_resultado(PRETO,DERROTA)
     else:
         print('BOT EMPATOU JOGANDO DE PRETAS')
+        registra_resultado(PRETO,EMPATE)
+        
+# Guarda em um arquivo txt a quantidade de [vitórias,derrotas,empates] ao longo das simulações. (Os arquivos precisam ter algum número já em cada uma das três linhas)
+def registra_resultado(jogador,resultado):
+    if jogador == PRETO:
+        file = open("Laboratório 2/partidas_de_preto.txt", "r")
+    else:
+        file = open("Laboratório 2/partidas_de_branco.txt", "r")        
+    lines = file.read().splitlines()       
+    
+    if resultado == VITORIA:
+        linha_incrementada = 0
+    elif resultado == DERROTA:
+        linha_incrementada = 1
+    else:
+        linha_incrementada = 2
+                
+    count = int(lines[linha_incrementada])
+    count += 1
+    lines[linha_incrementada] = str(count)    
+    file.close()
+    
+    if jogador == PRETO:
+        file = open("Laboratório 2/partidas_de_preto.txt", "w")
+    else:
+        file = open("Laboratório 2/partidas_de_branco.txt", "w")  
+    
+    for line in lines:        
+        file.writelines(line+'\n')    
+    file.close()
+    
 
 def main():
     #while True: # Deixa o BOT jogando até você encerrar a execução!
