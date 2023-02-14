@@ -172,13 +172,12 @@ def run_ga(g, n, k, m, e):
     melhor_individuo = tournament(populacao) # Obtém o melhor indivíduo, após o fim das gerações.
     return melhor_individuo # Retorna o melhor indivíduo.
 
-def main():
-
-    for i in range(0,100):
-        vencedor = run_ga(100, 75, 50, 0.3, 15)
+#def main():
+    #for i in range(0,100):
+        #vencedor = run_ga(100, 75, 50, 0.3, 15)
         #print("VENCEDOR:", vencedor)
-        print("NUMERO DE ATAQUES:", evaluate(vencedor))
+        #print("NUMERO DE ATAQUES:", evaluate(vencedor))
 
-start_time = time.time()
-main()
-print("\n--- TEMPO DE EXECUÇÃO: %s segundos ---\n" % (time.time() - start_time))
+#start_time = time.time()
+#main()
+#print("\n--- TEMPO DE EXECUÇÃO: %s segundos ---\n" % (time.time() - start_time))
