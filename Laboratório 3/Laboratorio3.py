@@ -65,7 +65,7 @@ def elitismo(participantes,e): # Retorna os "e" indivíduos mais aptos da popula
     participantes_aux = participantes[:e] # Obtem os "e" indivíduos que farão parte do torneio.
 
     mais_aptos = []
-    for i in range(0,e): # Realiza o torneio "e" vezes, para obter os indivíduos mais aptos do elitismo..
+    for i in range(0,e): # Realiza o torneio "e" vezes, para obter os indivíduos mais aptos do elitismo.
         vencedor = tournament(participantes_aux)
         participantes_aux.remove(vencedor)
         mais_aptos.append(vencedor)
