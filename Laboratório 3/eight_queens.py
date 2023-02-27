@@ -7,7 +7,6 @@
 # Willian Nunes Reichert  - Cartão 00134090
 
 TAMANHOTABULEIRO = 8 # Tamanho do tabuleiro de xadrez 8x8.
-PONTOCRUZAMENTO = 3 # Ponto de cruzamento do crossover.
 
 import random
 import time
@@ -58,25 +57,11 @@ def tournament(participants):
             melhor = participants[i]
     return melhor # Retorna o melhor participante, que possui menos conflitos.
 
-def elitismo(participantes,e): # Retorna os "e" indivíduos mais aptos da população.
-    if e > len(participantes):
-        return []
-
-    participantes_aux = participantes[:e] # Obtem os "e" indivíduos que farão parte do torneio.
-
-    mais_aptos = []
-    for i in range(0,e): # Realiza o torneio "e" vezes, para obter os indivíduos mais aptos do elitismo.
-        vencedor = tournament(participantes_aux)
-        participantes_aux.remove(vencedor)
-        mais_aptos.append(vencedor)
-
-    return mais_aptos
-
-def selecao(participantes,k): # Retorna os DOIS indivíduos mais aptos da população.
+def selecao(participantes,k): # Retorna os k indivíduos mais aptos da população.
     if k > len(participantes):
         return []
 
-    participantes_aux = participantes[:k] # Obtem os k indivíduos que farão parte do torneio.
+    participantes_aux = random.sample(participantes,k)
 
     mais_aptos = []
     for i in range(0,2): # Realiza o torneio duas vezes, para obter os dois indivíduos mais aptos.
@@ -138,7 +123,10 @@ def controla_parametros(g,n,k,m,e): # Verifica se os parâmetros da função pri
         return True
 
 def gera_aleatorio(): # Geração de população aleatória para o jogo das oito damas.
-    return random.sample(range(1, 9), 8)
+    lista = []
+    for i in range(TAMANHOTABULEIRO):
+        lista.append(random.randint(1, 9))
+    return lista
 
 def run_ga(g, n, k, m, e):
     """
@@ -153,31 +141,69 @@ def run_ga(g, n, k, m, e):
     if (controla_parametros(g,n,k,m,e) == False):
         return []
     populacao = []
-    populacao_nova = []
 
     for i in range(0,n):
         populacao.append(gera_aleatorio())
+    #print(len(populacao))
+
+    #print(populacao)
+    print("MAIOR CONFLITO: ", evaluate(tournament_pior(populacao)))
+    print("MENOR CONFLITO: ", evaluate(tournament(populacao)))
+    print("MELHOR SOLUÇÃO:", tournament(populacao))
+    print("MÉDIA DOS CONFLITOS:", media_conflitos(populacao))
+    print('----------------------------------------')
 
     for i in range(0,g):
-        populacao_nova = elitismo(populacao,e)
+        populacao = sorted(populacao, key=evaluate)
+        populacao_nova = populacao[:e]
         while len(populacao_nova) < n:
-            mais_aptos = selecao(populacao, k) # Realiza o torneio (SELEÇÃO) entre os primeiros k indivíduos.
-            descendentes = crossover(mais_aptos[0],mais_aptos[1],PONTOCRUZAMENTO) # Realiza o CROSSOVER entre os dois indivíduos mais aptos.
+            mais_aptos = selecao(populacao, k) # Realiza o torneio (SELEÇÃO) entre k indivíduos aleatórios.
+            ponto_cruzamento = random.randint(0,7)
+            descendentes = crossover(mais_aptos[0],mais_aptos[1],ponto_cruzamento) # Realiza o CROSSOVER entre os dois indivíduos mais aptos.
             descendentes[0] = mutate(descendentes[0],m) # Realiza a MUTAÇÃO no primeiro descendente do crossover.
             descendentes[1] = mutate(descendentes[1],m) # Realiza a MUTAÇÃO no segundo descendente do crossover.
             populacao_nova.append(descendentes[0]) # Salva o primeiro descendente do crossover.
             populacao_nova.append(descendentes[1]) # Salva o segundo descendente do crossover.
-        populacao = copy.copy(populacao_nova) # Atualiza a população.
+        populacao = populacao_nova # Atualiza a população.
+      #  print(populacao)
+        #print('----------------------------------------')
+       # print("GERAÇÃO:", i+1)
+       # print("MAIOR CONFLITO: ", evaluate(tournament_pior(populacao)))
+       # print("MENOR CONFLITO: ", evaluate(tournament(populacao)))
+       # print("MÉDIA DOS CONFLITOS:", media_conflitos(populacao))
+       # print('----------------------------------------')
+
+    print("MAIOR CONFLITO: ", evaluate(tournament_pior(populacao)))
+    print("MENOR CONFLITO: ", evaluate(tournament(populacao)))
+    print("MÉDIA DOS CONFLITOS:", media_conflitos(populacao))
 
     melhor_individuo = tournament(populacao) # Obtém o melhor indivíduo, após o fim das gerações.
     return melhor_individuo # Retorna o melhor indivíduo.
 
-#def main():
-    #for i in range(0,100):
-        #vencedor = run_ga(100, 75, 50, 0.3, 15)
-        #print("VENCEDOR:", vencedor)
-        #print("NUMERO DE ATAQUES:", evaluate(vencedor))
+def main():
+    while (True):
+        vencedor = run_ga(75, 75, 20, 0.4, 5)
+        print("VENCEDOR:", vencedor)
+        print("NUMERO DE ATAQUES:", evaluate(vencedor))
+        print('--------------- PROXIMA EXECUÇÃO ----------------')
 
-#start_time = time.time()
-#main()
-#print("\n--- TEMPO DE EXECUÇÃO: %s segundos ---\n" % (time.time() - start_time))
+def tournament_pior(participants):
+    melhor = participants[0]
+    menor_conflitos = evaluate(participants[0])
+    for i in range(1, len(participants)):
+        conflitos = evaluate(participants[i])
+        if conflitos > menor_conflitos:
+            menor_conflitos = conflitos
+            melhor = participants[i]
+    return melhor
+
+def media_conflitos(participants):
+    media = 0
+    for i in participants:
+        media += evaluate(i)
+    media /= len(participants)
+    return media
+
+start_time = time.time()
+main()
+print("\n--- TEMPO DE EXECUÇÃO: %s segundos ---\n" % (time.time() - start_time))
