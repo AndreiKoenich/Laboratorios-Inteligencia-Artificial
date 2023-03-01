@@ -11,8 +11,6 @@ TAMANHOTABULEIRO = 8 # Tamanho do tabuleiro de xadrez 8x8.
 import random
 import time
 import copy
-import numpy as np
-import matplotlib.pyplot as plt
 
 def evaluate(individual):
     """
@@ -182,85 +180,30 @@ def run_ga(g, n, k, m, e):
     melhor_individuo = tournament(populacao) # Obtém o melhor indivíduo, após o fim das gerações.
     return melhor_individuo # Retorna o melhor indivíduo.
 
-def compute_mse(theta_0, theta_1, data):
-    # Extrai as features (área do terreno) e as respostas (preço) do conjunto de dados
-    X = data[:, 0]
-    y = data[:, 1]
-    
-    # Calcula as previsões da regressão linear para cada exemplo do conjunto de dados
-    y_pred = theta_0 + theta_1 * X
-    
-    # Calcula o erro quadrático médio (MSE) das previsões
-    mse = np.mean((y_pred - y)**2)
-    
-    return mse
+def tournament_pior(participants):
+    melhor = participants[0]
+    menor_conflitos = evaluate(participants[0])
+    for i in range(1, len(participants)):
+        conflitos = evaluate(participants[i])
+        if conflitos > menor_conflitos:
+            menor_conflitos = conflitos
+            melhor = participants[i]
+    return melhor
 
-def step_gradient(theta_0, theta_1, data, alpha):
-    # Extrai as features (área do terreno) e as respostas (preço) do conjunto de dados
-    X = data[:, 0]
-    y = data[:, 1]
-    
-    # Calcula as previsões da regressão linear para cada exemplo do conjunto de dados
-    y_pred = theta_0 + theta_1 * X
-    
-    # Calcula o vetor de erros da regressão
-    errors = y_pred - y
-    
-    # Calcula o gradiente para theta_0 e theta_1
-    gradient_0 = np.mean(errors)
-    gradient_1 = np.mean(errors * X)
-    
-    # Atualiza os valores de theta_0 e theta_1 usando a taxa de aprendizado e o gradiente
-    new_theta_0 = theta_0 - alpha * gradient_0
-    new_theta_1 = theta_1 - alpha * gradient_1
-    
-    return new_theta_0, new_theta_1
-
-def fit(data, theta_0, theta_1, alpha, num_iterations):
-    # Cria as listas para armazenar os valores atualizados de theta_0 e theta_1 a cada época/iteração
-    theta_0_history = [theta_0]
-    theta_1_history = [theta_1]
-    
-    # Executa o loop de atualização por descida do gradiente por num_iterations épocas/iterações
-    for i in range(num_iterations):
-        # Executa uma atualização por descida do gradiente
-        theta_0, theta_1 = step_gradient(theta_0, theta_1, data, alpha)
-        
-        # Armazena os valores atualizados de theta_0 e theta_1 nas listas de histórico
-        theta_0_history.append(theta_0)
-        theta_1_history.append(theta_1)
-        
-    # Retorna as listas com os valores atualizados de theta_0 e theta_1 ao longo das épocas/iterações
-    return theta_0_history, theta_1_history
-
-def alegrete(theta_0,theta_1,alpha,num_iterations):   
-    data = np.genfromtxt('Laboratório 3/alegrete.csv', delimiter=',')
-    
-    # Executar o algoritmo de gradiente descendente
-    theta_0_history, theta_1_history = fit(data, theta_0, theta_1, alpha, num_iterations)
-    
-    # Calcula o erro quadrádico médio
-    print('Erro quadrádico médio: '+str(compute_mse(theta_0, theta_1, data)))
-    
-    # Plotar os dados
-    plt.scatter(data[:, 0], data[:, 1], color='blue')
-
-    # Plotar a linha de regressão
-    x = np.linspace(np.min(data[:, 0]), np.max(data[:, 0]), 100)
-    y = theta_0_history[-1] + theta_1_history[-1] * x
-    plt.plot(x, y, color='red')
-
-    plt.xlabel('Área do terreno (hectares)')
-    plt.ylabel('Preço (milhares de reais)')
-    plt.show()
+def media_conflitos(participants):
+    media = 0
+    for i in participants:
+        media += evaluate(i)
+    media /= len(participants)
+    return media
     
 
 def main():
-    alegrete(0,0,0.1,10000)
-    #for i in range(0,100):
-        #vencedor = run_ga(100, 75, 50, 0.3, 15)
-        #print("VENCEDOR:", vencedor)
-        #print("NUMERO DE ATAQUES:", evaluate(vencedor))
+    while (True):
+        vencedor = run_ga(75, 75, 20, 0.4, 5)
+        print("VENCEDOR:", vencedor)
+        print("NUMERO DE ATAQUES:", evaluate(vencedor))
+        print('--------------- PROXIMA EXECUÇÃO ----------------')
 
 start_time = time.time()
 main()
