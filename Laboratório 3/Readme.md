@@ -23,4 +23,7 @@ Chamada da função:
 
 NÃO ME PERGUNTES ONDE FICA O ALEGRETE ---------------------------------------------
 
-<<escrevam aqui os dados que o professor solicita no enunciado>>
+thetha_1=0
+thetha_2=0
+alpha=0.01
+num_iterations=2000
