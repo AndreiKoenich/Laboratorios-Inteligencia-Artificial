@@ -23,7 +23,15 @@ Chamada da função:
 
 NÃO ME PERGUNTES ONDE FICA O ALEGRETE ---------------------------------------------
 
-thetha_1=0
-thetha_2=0
-alpha=0.01
-num_iterations=2000
+Parâmetros da regressão linear utilizados:
+	intercepto inicial (theta_0) = inteiro aleatório entre -50 e 50 nos testes
+	inclinação inicial (theta_1) = inteiro aleatório entre -50 e 50 nos testes
+	taxa de aprendizado (alpha) = 0.01
+	número de iterações (num_iterations) = 3000
+
+Os testes mostraram que taxas de aprendizado levemente maiores resultam em
+overshooting, ao passo que taxas menores tornam a convergência após a redução dos
+gradientes muito mais lenta. Além disso, as 3000 iterações garantem que o erro
+quadrático médio final seja sempre consistente até 6 casas decimais (i.e., sempre
+termina em 8.527708...) dentro do intervalo (propositalmente grande em relação aos
+valores dos dados de teste) mencionado para os thetas iniciais.

@@ -7,86 +7,96 @@
 # Willian Nunes Reichert  - Cartão 00134090
 
 import time
-import numpy as np
+from random import randint
+
 import matplotlib.pyplot as plt
+import numpy as np
+
 
 def compute_mse(theta_0, theta_1, data):
     # Extrai as features (área do terreno) e as respostas (preço) do conjunto de dados
-    X = data[:, 0]
+    x = data[:, 0]
     y = data[:, 1]
-    
+
     # Calcula as previsões da regressão linear para cada exemplo do conjunto de dados
-    y_pred = theta_0 + theta_1 * X
-    
+    y_pred = theta_0 + theta_1 * x
+
     # Calcula o erro quadrático médio (MSE) das previsões
-    mse = np.mean((y_pred - y)**2)
-    
+    mse = np.mean((y_pred - y) ** 2)
+
     return mse
+
 
 def step_gradient(theta_0, theta_1, data, alpha):
     # Extrai as features (área do terreno) e as respostas (preço) do conjunto de dados
-    X = data[:, 0]
+    x = data[:, 0]
     y = data[:, 1]
-    
+
     # Calcula as previsões da regressão linear para cada exemplo do conjunto de dados
-    y_pred = theta_0 + theta_1 * X
-    
+    y_pred = theta_0 + theta_1 * x
+
     # Calcula o vetor de erros da regressão
     errors = y_pred - y
-    
+
     # Calcula o gradiente para theta_0 e theta_1
-    gradient_0 = np.mean(errors)
-    gradient_1 = np.mean(errors * X)
-    
+    gradient_0 = 2 * np.mean(errors)
+    gradient_1 = 2 * np.mean(errors * x)
+
     # Atualiza os valores de theta_0 e theta_1 usando a taxa de aprendizado e o gradiente
     new_theta_0 = theta_0 - alpha * gradient_0
     new_theta_1 = theta_1 - alpha * gradient_1
-    
+
     return new_theta_0, new_theta_1
+
 
 def fit(data, theta_0, theta_1, alpha, num_iterations):
     # Cria as listas para armazenar os valores atualizados de theta_0 e theta_1 a cada época/iteração
     theta_0_history = [theta_0]
     theta_1_history = [theta_1]
-    
+
     # Executa o loop de atualização por descida do gradiente por num_iterations épocas/iterações
     for i in range(num_iterations):
         # Executa uma atualização por descida do gradiente
         theta_0, theta_1 = step_gradient(theta_0, theta_1, data, alpha)
-        
+
         # Armazena os valores atualizados de theta_0 e theta_1 nas listas de histórico
         theta_0_history.append(theta_0)
         theta_1_history.append(theta_1)
-        
+
     # Retorna as listas com os valores atualizados de theta_0 e theta_1 ao longo das épocas/iterações
     return theta_0_history, theta_1_history
 
-def alegrete(theta_0,theta_1,alpha,num_iterations):   
-    data = np.genfromtxt('Laboratório 3/alegrete.csv', delimiter=',')
-    
+
+def alegrete(theta_0, theta_1, alpha, num_iterations, plot=False):
+    data = np.genfromtxt('alegrete.csv', delimiter=',')
+
     # Executar o algoritmo de gradiente descendente
     theta_0_history, theta_1_history = fit(data, theta_0, theta_1, alpha, num_iterations)
-    
-    # Calcula o erro quadrádico médio
-    print('Erro quadrádico médio: '+str(compute_mse(theta_0, theta_1, data)))
-    
-    # Plotar os dados
-    plt.scatter(data[:, 0], data[:, 1], color='blue')
 
-    # Plotar a linha de regressão
-    x = np.linspace(np.min(data[:, 0]), np.max(data[:, 0]), 100)
-    y = theta_0_history[-1] + theta_1_history[-1] * x
-    plt.plot(x, y, color='red')
+    # Calcula o erro quadrádico médio após o treino
+    mse_final = compute_mse(theta_0_history[-1], theta_1_history[-1], data)
 
-    plt.xlabel('Área do terreno (hectares)')
-    plt.ylabel('Preço (milhares de reais)')
-    plt.show()
+    if plot:
+        # Plotar os dados
+        plt.scatter(data[:, 0], data[:, 1], color='blue')
+
+        # Plotar a linha de regressão
+        x = np.linspace(np.min(data[:, 0]), np.max(data[:, 0]), 100)
+        y = theta_0_history[-1] + theta_1_history[-1] * x
+        plt.plot(x, y, color='red')
+
+        plt.xlabel('Área do terreno (hectares)')
+        plt.ylabel('Preço (milhares de reais)')
+        plt.show()
+
+    return mse_final
 
 
-def main():
-    alegrete(0,0,0.1,10000)
+if __name__ == "__main__":
+    start_time = time.time()
+    mse_hist = [alegrete(randint(-50, 50), randint(-50, 50), 0.01, 3000) for i in range(250)]
 
-
-start_time = time.time()
-main()
-print("\n--- TEMPO DE EXECUÇÃO: %s segundos ---\n" % (time.time() - start_time))
+    print(f'MSE mínimo: {min(mse_hist):.8}')
+    print(f'MSE máximo: {max(mse_hist):.8}')
+    print(f'MSE médio: {(sum(mse_hist)/len(mse_hist)):.8}')
+    print(f'\n--- TEMPO DE EXECUÇÃO: {(time.time() - start_time):.6} segundos ---\n')
