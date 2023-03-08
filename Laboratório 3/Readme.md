@@ -9,7 +9,7 @@ Willian Nunes Reichert - Cartão 00134090 - Turma B
 GENÉTICA DA REALEZA ---------------------------------------------------------------
 
 Solução final encontrada, com número de conflitos igual a zero:
-[5, 1, 8, 4, 2, 7, 3, 6]
+[4, 7, 5, 3, 1, 6, 8, 2]
 
 Parâmetros do algoritmo genético utilizados:
 	numero de gerações (g) = 100
@@ -17,9 +17,13 @@ Parâmetros do algoritmo genético utilizados:
 	numero de participantes do torneio (k) = 20
 	probabilidade de mutação (m) = 0.30
 	número de indivíduos no elitismo (e) = 5
-	
+
 Chamada da função:
 	run_ga(100, 75, 20, 0.30, 5)
+
+Para executar o algoritmo e gerar o gráfico que foi incluído na entrega do
+trabalho, basta trocar a chamada de run_ga(...) na linha 226 do eight_queens.py por
+run_ga_with_plot(...) (os parâmetros são os mesmos).
 
 NÃO ME PERGUNTES ONDE FICA O ALEGRETE ---------------------------------------------
 
