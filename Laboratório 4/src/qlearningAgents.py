@@ -16,7 +16,10 @@ from game import *
 from learningAgents import ReinforcementAgent
 from featureExtractors import *
 
-import random,util,math
+import random
+import util
+import math
+
 
 class QLearningAgent(ReinforcementAgent):
     """
@@ -38,11 +41,11 @@ class QLearningAgent(ReinforcementAgent):
         - self.getLegalActions(state)
           which returns legal actions for a state
     """
-    def __init__(self, **args):
-        "You can initialize Q-values here..."
-        ReinforcementAgent.__init__(self, **args)
 
-        "*** YOUR CODE HERE ***"
+    def __init__(self, **args):
+        """You can initialize Q-values here..."""
+        ReinforcementAgent.__init__(self, **args)
+        self.qValues = util.Counter()
 
     def getQValue(self, state, action):
         """
@@ -50,9 +53,7 @@ class QLearningAgent(ReinforcementAgent):
           Should return 0.0 if we have never seen a state
           or the Q node value otherwise
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
-
+        return self.qValues[(state, action)]
 
     def computeValueFromQValues(self, state):
         """
@@ -61,8 +62,15 @@ class QLearningAgent(ReinforcementAgent):
           there are no legal actions, which is the case at the
           terminal state, you should return a value of 0.0.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        actions = self.getLegalActions(state)
+
+        if len(actions) == 0:
+            return 0.0
+        if len(actions) == 1:
+            return self.getQValue(state, actions[0])
+
+        values = [self.getQValue(state, action) for action in actions]
+        return max(values)
 
     def computeActionFromQValues(self, state):
         """
@@ -70,8 +78,16 @@ class QLearningAgent(ReinforcementAgent):
           are no legal actions, which is the case at the terminal state,
           you should return None.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        actions = self.getLegalActions(state)
+
+        if len(actions) == 0:
+            return None
+        if len(actions) == 1:
+            return actions[0]
+
+        max_action = self.computeValueFromQValues(state)
+        options = [action for action in actions if self.getQValue(state, action) == max_action]
+        return random.choice(options)
 
     def getAction(self, state):
         """
@@ -85,12 +101,17 @@ class QLearningAgent(ReinforcementAgent):
           HINT: To pick randomly from a list, use random.choice(list)
         """
         # Pick Action
-        legalActions = self.getLegalActions(state)
-        action = None
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        actions = self.getLegalActions(state)
 
-        return action
+        if len(actions) == 0:
+            return None
+        if len(actions) == 1:
+            return actions[0]
+
+        if flipCoin(self.epsilon):
+            return random.choice(actions)
+
+        return self.computeActionFromQValues(state)
 
     def update(self, state, action, nextState, reward):
         """
@@ -101,8 +122,9 @@ class QLearningAgent(ReinforcementAgent):
           NOTE: You should never call this function,
           it will be called on your behalf
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        current_q = (1 - self.alpha) * self.getQValue(state, action)
+        next_q = self.alpha * (reward + self.discount * self.computeValueFromQValues(nextState))
+        self.qValues[(state, action)] = current_q + next_q
 
     def getPolicy(self, state):
         return self.computeActionFromQValues(state)
@@ -112,9 +134,9 @@ class QLearningAgent(ReinforcementAgent):
 
 
 class PacmanQAgent(QLearningAgent):
-    "Exactly the same as QLearningAgent, but with different default parameters"
+    """Exactly the same as QLearningAgent, but with different default parameters"""
 
-    def __init__(self, epsilon=0.05,gamma=0.8,alpha=0.2, numTraining=0, **args):
+    def __init__(self, epsilon=0.05, gamma=0.8, alpha=0.2, numTraining=0, **args):
         """
         These default parameters can be changed from the pacman.py command line.
         For example, to change the exploration rate, try:
@@ -138,8 +160,8 @@ class PacmanQAgent(QLearningAgent):
         informs parent of action for Pacman.  Do not change or remove this
         method.
         """
-        action = QLearningAgent.getAction(self,state)
-        self.doAction(state,action)
+        action = QLearningAgent.getAction(self, state)
+        self.doAction(state, action)
         return action
 
 
@@ -151,6 +173,7 @@ class ApproximateQAgent(PacmanQAgent):
        and update.  All other QLearningAgent functions
        should work as is.
     """
+
     def __init__(self, extractor='IdentityExtractor', **args):
         self.featExtractor = util.lookup(extractor, globals())()
         PacmanQAgent.__init__(self, **args)
@@ -175,7 +198,7 @@ class ApproximateQAgent(PacmanQAgent):
         util.raiseNotDefined()
 
     def final(self, state):
-        "Called at the end of each game."
+        """Called at the end of each game."""
         # call the super-class final method
         PacmanQAgent.final(self, state)
 
