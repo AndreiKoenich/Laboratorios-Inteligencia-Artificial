@@ -11,22 +11,6 @@ import math
 import random
 import time
 from collections import OrderedDict
-from typing import Tuple
-from ..othello.gamestate import GameState
-
-# UNIVERSIDADE FEDERAL DO RIO GRANDE DO SUL - Semestre 2022/02
-
-# Trabalho 2 - Monte Carlo Tree Search em Othello/Reversi
-
-# Andrei Pochmann Koenich - Cartão 00308680
-# Jean Smaniotto Argoud   - Cartão 00275602
-# Willian Nunes Reichert  - Cartão 00134090
-
-import copy
-import math
-import random
-import time
-from collections import OrderedDict
 
 POSICAOINICIAL = [
     '........',
